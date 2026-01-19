@@ -1,0 +1,101 @@
+{
+  "module": {
+    "name": "Auditoria",
+    "description": "Administración y seguridad del sistema",
+    "icon": "Settings",
+    "path": "auditoria",
+    "folder": "auditoria",
+    "requiredRole": "admin",
+    "containerStyle": "tabs"
+  },
+  "entities": [
+    {
+      "name": "Organizacion",
+      "plural": "organizaciones",
+      "table": "organizaciones",
+      "fields": "nombre:string:req codigo:string:req descripcion:text logo_url:string color_primario:string color_secundario:string direccion:string telefono:string email:email sitio_web:string",
+      "icon": "Building2",
+      "order": 1
+    },
+    {
+      "name": "Usuario",
+      "plural": "usuarios",
+      "table": "usuarios",
+      "fields": "email:email:req password_hash:string:req nombre:string:req apellido:string:req telefono:string rol:enum(usuario,supervisor,admin):req organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Users",
+      "order": 2
+    },
+    {
+      "name": "Rol",
+      "plural": "roles",
+      "table": "roles",
+      "fields": "nombre:string:req codigo:string:req descripcion:text organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Shield",
+      "order": 3
+    },
+    {
+      "name": "Permiso",
+      "plural": "permisos",
+      "table": "permisos",
+      "fields": "nombre:string:req codigo:string:req modulo:string:req descripcion:text organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Key",
+      "order": 4
+    },
+    {
+      "name": "Rolpermiso",
+      "plural": "rol_permisos",
+      "table": "rol_permisos",
+      "fields": "rol_id:fk:Rol:roles:req permiso_id:fk:Permiso:permisos:req organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Link",
+      "order": 5
+    },
+    {
+      "name": "Menu",
+      "plural": "menus",
+      "table": "menus",
+      "fields": "nombre:string:req path:string:req icono:string orden:int parent_id:fk:Menu:menus organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Menu",
+      "order": 6
+    },
+    {
+      "name": "Menurol",
+      "plural": "menu_roles",
+      "table": "menu_roles",
+      "fields": "menu_id:fk:Menu:menus:req rol_id:fk:Rol:roles:req organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Link",
+      "order": 7
+    },
+    {
+      "name": "Logauditoria",
+      "plural": "logs_auditoria",
+      "table": "logs_auditoria",
+      "fields": "usuario_id:fk:Usuario:usuarios accion:string:req entidad:string entidad_id:int datos_anteriores:json datos_nuevos:json ip:string user_agent:string organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "FileText",
+      "order": 8
+    },
+    {
+      "name": "Sesion",
+      "plural": "sesiones",
+      "table": "sesiones",
+      "fields": "usuario_id:fk:Usuario:usuarios:req token:string:req ip:string user_agent:string expires_at:datetime organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Clock",
+      "order": 9
+    },
+    {
+      "name": "Parametro",
+      "plural": "parametros",
+      "table": "parametros",
+      "fields": "clave:string:req valor:text:req tipo:enum(string,number,boolean,json):req descripcion:text editable:bool organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Sliders",
+      "order": 10
+    },
+    {
+      "name": "Notificacion",
+      "plural": "notificaciones",
+      "table": "notificaciones",
+      "fields": "usuario_id:fk:Usuario:usuarios:req titulo:string:req mensaje:text tipo:enum(info,success,warning,error) leida:bool organizacion_id:fk:Organizacion:organizaciones",
+      "icon": "Bell",
+      "order": 11
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "module": {
+    "name": "Test",
+    "description": "Módulo de prueba - Cliente, Pedido, Detalle",
+    "icon": "ShoppingCart",
+    "path": "/test",
+    "folder": "test",
+    "requiredRole": "admin",
+    "containerStyle": "dashboard"
+  },
+  "entities": [
+    {
+      "name": "Cliente",
+      "plural": "clientes",
+      "table": "clientes",
+      "fields": "codigo:string nombre:string:req email:email telefono:string direccion:text tipo:enum(minorista,mayorista,distribuidor)",
+      "icon": "Users",
+      "order": 1,
+      "displayField": "nombre"
+    },
+    {
+      "name": "Producto",
+      "plural": "productos",
+      "table": "productos",
+      "fields": "codigo:string:req nombre:string:req descripcion:text precio:decimal:req stock:int",
+      "icon": "Package",
+      "order": 2,
+      "displayField": "nombre"
+    },
+    {
+      "name": "Pedido",
+      "plural": "pedidos",
+      "table": "pedidos",
+      "fields": "numero:string:req fecha:date:req cliente_id:fk:Cliente:req estado:enum(pendiente,confirmado,enviado,entregado,cancelado) subtotal:decimal total:decimal notas:text",
+      "icon": "ShoppingCart",
+      "order": 3,
+      "masterDetail": true,
+      "displayField": "numero"
+    },
+    {
+      "name": "DetallePedido",
+      "plural": "detalles_pedido",
+      "table": "detalles_pedido",
+      "fields": "pedido_id:fk:Pedido:req producto_id:fk:Producto:req cantidad:int:req precio_unitario:decimal:req subtotal:decimal",
+      "icon": "List",
+      "order": 4,
+      "isDetail": true,
+      "masterEntity": "Pedido"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "module": {
+    "name": "Negocio",
+    "description": "Gestión de clientes, productos y pedidos",
+    "icon": "ShoppingBag",
+    "path": "negocio",
+    "folder": "negocio",
+    "requiredRole": "usuario",
+    "containerStyle": "dashboard"
+  },
+  "entities": [
+    {
+      "name": "Categoria",
+      "plural": "categorias",
+      "table": "categorias",
+      "fields": "nombre:string:req descripcion:text color:string",
+      "icon": "Tag",
+      "order": 1
+    },
+    {
+      "name": "Producto",
+      "plural": "productos",
+      "table": "productos",
+      "fields": "codigo:string nombre:string:req descripcion:text precio:decimal:req costo:decimal stock:integer stock_minimo:integer categoria_id:fk:Categoria",
+      "icon": "Box",
+      "order": 2
+    },
+    {
+      "name": "Cliente",
+      "plural": "clientes",
+      "table": "clientes",
+      "fields": "codigo:string nombre:string:req razon_social:string cuit:string email:email telefono:string direccion:text ciudad:string provincia:string tipo:enum(minorista,mayorista,distribuidor)",
+      "icon": "Users",
+      "order": 3
+    },
+    {
+      "name": "Proveedor",
+      "plural": "proveedores",
+      "table": "proveedores",
+      "fields": "codigo:string nombre:string:req razon_social:string cuit:string contacto:string telefono:string email:email direccion:text notas:text",
+      "icon": "Truck",
+      "order": 4
+    },
+    {
+      "name": "Pedido",
+      "plural": "pedidos",
+      "table": "pedidos",
+      "fields": "numero:string:req fecha:date:req fecha_entrega:date cliente_id:fk:Cliente:req estado:enum(pendiente,confirmado,preparando,enviado,entregado,cancelado):req subtotal:decimal descuento:decimal total:decimal notas:text",
+      "icon": "ShoppingCart",
+      "order": 5,
+      "masterDetail": true
+    },
+    {
+      "name": "DetallePedido",
+      "plural": "detalles_pedido",
+      "table": "detalles_pedido",
+      "fields": "pedido_id:fk:Pedido:req producto_id:fk:Producto:req cantidad:decimal:req precio_unitario:decimal:req descuento:decimal subtotal:decimal:req",
+      "icon": "ListOrdered",
+      "order": 5.1,
+      "isDetail": true,
+      "masterEntity": "Pedido"
+    },
+    {
+      "name": "Compra",
+      "plural": "compras",
+      "table": "compras",
+      "fields": "numero:string:req fecha:date:req fecha_recepcion:date proveedor_id:fk:Proveedor:req estado:enum(pendiente,parcial,recibido,cancelado):req subtotal:decimal descuento:decimal total:decimal notas:text",
+      "icon": "Receipt",
+      "order": 6
+    },
+    {
+      "name": "Movimiento",
+      "plural": "movimientos",
+      "table": "movimientos",
+      "fields": "fecha:datetime:req tipo:enum(entrada,salida,ajuste_positivo,ajuste_negativo):req producto_id:fk:Producto:req cantidad:integer:req stock_anterior:integer stock_posterior:integer motivo:string referencia:string",
+      "icon": "ArrowLeftRight",
+      "order": 7
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "sys-cli",
+  "version": "1.0.0",
+  "description": "CLI para generación de código desde JSONs",
+  "scripts": {
+    "sync": "npx tsx sync.ts",
+    "sync:migrate": "npx tsx sync.ts --migrate",
+    "generate": "npx tsx generate-sqlmodel.ts"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.35.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mysql2": "^3.16.1"
+  }
+}
