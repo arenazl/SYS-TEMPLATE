@@ -1,0 +1,100 @@
+# Dependabot configuration for automated dependency updates
+# Documentation: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Backend Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "backend"
+      - "python"
+    commit-message:
+      prefix: "pip"
+      include: "scope"
+    reviewers:
+      - "arenazl"
+    assignees:
+      - "arenazl"
+    # Group minor and patch updates together to reduce PR noise
+    groups:
+      production-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "pytest*"
+          - "ruff"
+      development-dependencies:
+        patterns:
+          - "pytest*"
+          - "ruff"
+    # Allow version updates for security vulnerabilities
+    allow:
+      - dependency-type: "all"
+
+  # Frontend npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "javascript"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+    reviewers:
+      - "arenazl"
+    assignees:
+      - "arenazl"
+    # Group minor and patch updates together to reduce PR noise
+    groups:
+      production-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@types/*"
+          - "eslint*"
+          - "@playwright/*"
+          - "playwright"
+      development-dependencies:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "@playwright/*"
+          - "playwright"
+    # Ignore major version updates for React (requires careful migration)
+    ignore:
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+    # Allow version updates for security vulnerabilities
+    allow:
+      - dependency-type: "all"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci-cd"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
