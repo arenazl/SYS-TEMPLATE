@@ -318,6 +318,28 @@ export const themePresets: ThemePreset[] = [
       border: '#44403c',
     },
   },
+
+  // 13. MindfulSpace - Neumorphic Pastel (Mental Health)
+  {
+    id: 'mindful',
+    name: 'MindfulSpace',
+    palette: ['#E8EEF5', '#ffffff', '#34d399', '#22d3ee'],
+    colors: {
+      background: '#E8EEF5',
+      backgroundSecondary: '#dce4ed',
+      contentBackground: '#E8EEF5',
+      card: '#E8EEF5',
+      sidebar: '#E8EEF5',
+      sidebarText: '#334155',
+      sidebarTextSecondary: '#64748b',
+      text: '#1e293b',
+      textSecondary: '#64748b',
+      primary: '#34d399',
+      primaryHover: '#10b981',
+      primaryText: '#ffffff',
+      border: '#c5ccd6',
+    },
+  },
 ];
 
 // Helper para obtener un tema por ID

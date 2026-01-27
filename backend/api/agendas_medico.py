@@ -24,6 +24,8 @@ async def listar(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     activo: bool | None = None,
+    medico_id: int | None = None,
+    dia_semana: str | None = None,
     db: AsyncSession = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
@@ -32,6 +34,10 @@ async def listar(
     )
     if activo is not None:
         query = query.where(AgendaMedico.activo == activo)
+    if medico_id is not None:
+        query = query.where(AgendaMedico.medico_id == medico_id)
+    if dia_semana is not None:
+        query = query.where(AgendaMedico.dia_semana == dia_semana)
 
     count_query = select(func.count()).select_from(query.subquery())
     total = await db.scalar(count_query)

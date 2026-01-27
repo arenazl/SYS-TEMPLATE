@@ -42,7 +42,7 @@ interface KPICardProps {
 }
 
 function KPICard({ title, icon, value, subtitle, linkTo, variant = 'default' }: KPICardProps) {
-  const { theme } = useTheme();
+  const { theme, isNeumorphic } = useTheme();
 
   const variantColors = {
     default: theme.primary,
@@ -56,13 +56,16 @@ function KPICard({ title, icon, value, subtitle, linkTo, variant = 'default' }: 
 
   const content = (
     <div
-      className="rounded-xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group"
-      style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
+      className={`rounded-2xl p-5 transition-all duration-200 hover:-translate-y-1 group ${isNeumorphic ? 'neu-raised hover:neu-subtle' : 'hover:shadow-lg'}`}
+      style={{
+        backgroundColor: theme.card,
+        border: isNeumorphic ? 'none' : `1px solid ${theme.border}`
+      }}
     >
       <div className="flex items-center justify-between mb-3">
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: `${color}15` }}
+          className={`w-12 h-12 rounded-xl flex items-center justify-center ${isNeumorphic ? 'neu-button' : ''}`}
+          style={{ backgroundColor: isNeumorphic ? theme.card : `${color}15` }}
         >
           <span style={{ color }}>{icon}</span>
         </div>
@@ -92,21 +95,21 @@ interface QuickActionProps {
 }
 
 function QuickAction({ label, icon, to, color }: QuickActionProps) {
-  const { theme } = useTheme();
+  const { theme, isNeumorphic } = useTheme();
   const accentColor = color || theme.primary;
 
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 p-4 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+      className={`flex items-center gap-3 p-4 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] ${isNeumorphic ? 'neu-button' : ''}`}
       style={{
         backgroundColor: theme.card,
-        border: `1px solid ${theme.border}`
+        border: isNeumorphic ? 'none' : `1px solid ${theme.border}`
       }}
     >
       <div
-        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-        style={{ backgroundColor: `${accentColor}15` }}
+        className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${isNeumorphic ? 'neu-pressed' : ''}`}
+        style={{ backgroundColor: isNeumorphic ? theme.card : `${accentColor}15` }}
       >
         <span style={{ color: accentColor }}>{icon}</span>
       </div>
@@ -116,7 +119,7 @@ function QuickAction({ label, icon, to, color }: QuickActionProps) {
 }
 
 function TurnoItem({ turno }: { turno: ProximoTurno }) {
-  const { theme } = useTheme();
+  const { theme, isNeumorphic } = useTheme();
 
   const estadoColors: Record<string, string> = {
     confirmado: '#10b981',
@@ -135,12 +138,12 @@ function TurnoItem({ turno }: { turno: ProximoTurno }) {
 
   return (
     <div
-      className="flex items-center gap-4 p-3 rounded-lg"
-      style={{ backgroundColor: theme.backgroundSecondary }}
+      className={`flex items-center gap-4 p-3 rounded-xl ${isNeumorphic ? 'neu-subtle' : ''}`}
+      style={{ backgroundColor: isNeumorphic ? theme.card : theme.backgroundSecondary }}
     >
       <div
-        className="w-14 h-14 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
-        style={{ backgroundColor: `${theme.primary}15` }}
+        className={`w-14 h-14 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${isNeumorphic ? 'neu-pressed' : ''}`}
+        style={{ backgroundColor: isNeumorphic ? theme.card : `${theme.primary}15` }}
       >
         <Clock className="h-4 w-4 mb-0.5" style={{ color: theme.primary }} />
         <span className="text-xs font-bold" style={{ color: theme.primary }}>{turno.hora}</span>
@@ -167,7 +170,7 @@ function TurnoItem({ turno }: { turno: ProximoTurno }) {
 }
 
 export default function Dashboard() {
-  const { theme } = useTheme();
+  const { theme, isNeumorphic } = useTheme();
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats>({
     turnos_hoy: 0,
@@ -352,8 +355,8 @@ export default function Dashboard() {
             </Link>
           </div>
           <div
-            className="rounded-xl p-4 space-y-3"
-            style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
+            className={`rounded-2xl p-4 space-y-3 ${isNeumorphic ? 'neu-raised' : ''}`}
+            style={{ backgroundColor: theme.card, border: isNeumorphic ? 'none' : `1px solid ${theme.border}` }}
           >
             {proximosTurnos.length > 0 ? (
               proximosTurnos.map((turno) => (
@@ -447,8 +450,8 @@ export default function Dashboard() {
 
       {/* Alertas y Recordatorios */}
       <div
-        className="rounded-xl p-5"
-        style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
+        className={`rounded-2xl p-5 ${isNeumorphic ? 'neu-raised' : ''}`}
+        style={{ backgroundColor: theme.card, border: isNeumorphic ? 'none' : `1px solid ${theme.border}` }}
       >
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: theme.text }}>
           <Bell className="h-5 w-5" style={{ color: theme.primary }} />

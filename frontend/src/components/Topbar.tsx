@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Topbar() {
-  const { theme, setTheme, presets } = useTheme();
+  const { theme, setTheme, presets, isNeumorphic } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -36,10 +36,10 @@ export default function Topbar() {
 
   return (
     <header
-      className="fixed top-0 right-0 left-0 lg:left-64 h-16 z-30 flex items-center justify-between px-4 sm:px-6"
+      className={`fixed top-0 right-0 left-0 lg:left-64 h-16 z-30 flex items-center justify-between px-4 sm:px-6 ${isNeumorphic ? 'neu-raised' : ''}`}
       style={{
         backgroundColor: theme.card,
-        borderBottom: `1px solid ${theme.border}`,
+        borderBottom: isNeumorphic ? 'none' : `1px solid ${theme.border}`,
       }}
     >
       {/* Spacer for mobile menu button */}

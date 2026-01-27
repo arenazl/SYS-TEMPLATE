@@ -15,6 +15,7 @@ interface ThemeContextType {
   setTheme: (themeId: string) => void;
   presets: ThemePreset[];
   backgrounds: ThemeBackgrounds;
+  isNeumorphic: boolean;
   updateGeneralBg: (url: string | undefined) => void;
   updateSidebarBg: (url: string | undefined) => void;
   updateTopbarBg: (url: string | undefined) => void;
@@ -51,6 +52,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     id: currentThemeId,
     name: currentPreset?.name || 'Oscuro',
   };
+
+  // Check if current theme is neumorphic (MindfulSpace)
+  const isNeumorphic = currentThemeId === 'mindful';
 
   // Aplicar CSS variables
   useEffect(() => {
@@ -127,6 +131,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setTheme,
         presets: themePresets,
         backgrounds,
+        isNeumorphic,
         updateGeneralBg,
         updateSidebarBg,
         updateTopbarBg,

@@ -10,7 +10,115 @@
   --color-primary-hover: #4338ca;
   --bg-card: #1e293b;
   --bg-sidebar: #0f172a;
+
+  /* Neumorphic variables */
+  --neu-bg: #E8EEF5;
+  --neu-shadow-dark: #c5ccd6;
+  --neu-shadow-light: #ffffff;
 }
+
+/* ============================================
+   NEUMORPHIC DESIGN SYSTEM
+   ============================================ */
+
+/* Neumorphic raised effect (extruded) */
+.neu-raised {
+  background: var(--neu-bg);
+  box-shadow:
+    8px 8px 16px var(--neu-shadow-dark),
+    -8px -8px 16px var(--neu-shadow-light);
+  border: none;
+}
+
+/* Neumorphic pressed effect (inset) */
+.neu-pressed {
+  background: var(--neu-bg);
+  box-shadow:
+    inset 4px 4px 8px var(--neu-shadow-dark),
+    inset -4px -4px 8px var(--neu-shadow-light);
+}
+
+/* Neumorphic button */
+.neu-button {
+  background: var(--neu-bg);
+  box-shadow:
+    6px 6px 12px var(--neu-shadow-dark),
+    -6px -6px 12px var(--neu-shadow-light);
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.neu-button:hover {
+  box-shadow:
+    4px 4px 8px var(--neu-shadow-dark),
+    -4px -4px 8px var(--neu-shadow-light);
+}
+
+.neu-button:active {
+  box-shadow:
+    inset 4px 4px 8px var(--neu-shadow-dark),
+    inset -4px -4px 8px var(--neu-shadow-light);
+}
+
+/* Neumorphic subtle */
+.neu-subtle {
+  background: var(--neu-bg);
+  box-shadow:
+    4px 4px 8px var(--neu-shadow-dark),
+    -4px -4px 8px var(--neu-shadow-light);
+}
+
+/* Neumorphic card */
+.neu-card {
+  background: var(--neu-bg);
+  box-shadow:
+    8px 8px 20px var(--neu-shadow-dark),
+    -8px -8px 20px var(--neu-shadow-light);
+  border-radius: 1.5rem;
+}
+
+/* Neumorphic input */
+.neu-input {
+  background: var(--neu-bg);
+  box-shadow:
+    inset 3px 3px 6px var(--neu-shadow-dark),
+    inset -3px -3px 6px var(--neu-shadow-light);
+  border: none;
+  outline: none;
+}
+
+.neu-input:focus {
+  box-shadow:
+    inset 4px 4px 8px var(--neu-shadow-dark),
+    inset -4px -4px 8px var(--neu-shadow-light);
+}
+
+/* Neumorphic icon container */
+.neu-icon {
+  background: var(--neu-bg);
+  box-shadow:
+    4px 4px 8px var(--neu-shadow-dark),
+    -4px -4px 8px var(--neu-shadow-light);
+  border-radius: 0.75rem;
+}
+
+/* Gradient accent for neumorphic */
+.neu-gradient-primary {
+  background: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+  box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
+}
+
+.neu-gradient-primary:hover {
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.4);
+}
+
+/* Pastel accent colors */
+.pastel-lavender { background-color: #E6E6FA; }
+.pastel-mint { background-color: #98FB98; }
+.pastel-peach { background-color: #FFDAB9; }
+.pastel-sky { background-color: #87CEEB; }
+.pastel-blush { background-color: #FFB6C1; }
+.pastel-cream { background-color: #FFFDD0; }
 
 body {
   background-color: var(--bg-primary);

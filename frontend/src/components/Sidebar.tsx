@@ -88,7 +88,7 @@ interface MenuItem {
 }
 
 export default function Sidebar() {
-  const { theme } = useTheme();
+  const { theme, isNeumorphic } = useTheme();
   const { org } = useOrganization();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -137,11 +137,13 @@ export default function Sidebar() {
         to={item.path}
         onClick={() => setIsOpen(false)}
         className={`
-          flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 text-sm
+          flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm
           ${active ? 'font-semibold' : 'hover:translate-x-1'}
+          ${isNeumorphic && active ? 'neu-pressed' : ''}
+          ${isNeumorphic && !active ? 'hover:neu-subtle' : ''}
         `}
         style={{
-          backgroundColor: active ? `${theme.primary}15` : 'transparent',
+          backgroundColor: isNeumorphic ? 'transparent' : (active ? `${theme.primary}15` : 'transparent'),
           color: active ? theme.primary : theme.textSecondary,
         }}
       >
@@ -229,10 +231,11 @@ export default function Sidebar() {
           fixed top-0 left-0 h-full z-40 w-64
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${isNeumorphic ? 'neu-raised' : ''}
         `}
         style={{
           backgroundColor: theme.card,
-          borderRight: `1px solid ${theme.border}`,
+          borderRight: isNeumorphic ? 'none' : `1px solid ${theme.border}`,
         }}
       >
         {/* Logo y nombre de organización */}

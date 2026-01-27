@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useOrganization, type OrgConfig } from '../contexts/OrganizationContext';
-import { Mail, Lock, Loader2, LogIn } from 'lucide-react';
+import { Mail, Lock, Loader2, LogIn, Leaf } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import api from '../lib/api';
 
@@ -14,7 +14,7 @@ export default function Login() {
   const [config, setConfig] = useState<OrgConfig | null>(null);
   const { login } = useAuth();
   const { setOrg } = useOrganization();
-  const { theme } = useTheme();
+  const { theme, isNeumorphic } = useTheme();
   const navigate = useNavigate();
 
   // Cargar configuración pública de la organización
@@ -88,10 +88,10 @@ export default function Login() {
       style={{ backgroundColor: theme.background }}
     >
       <div
-        className="w-full max-w-md rounded-2xl border p-8 shadow-xl"
+        className={`w-full max-w-md rounded-3xl p-8 ${isNeumorphic ? 'neu-card' : 'border shadow-xl'}`}
         style={{
           backgroundColor: theme.card,
-          borderColor: theme.border
+          borderColor: isNeumorphic ? 'transparent' : theme.border
         }}
       >
         {/* Logo */}
@@ -100,17 +100,21 @@ export default function Login() {
             <img src={config.logo_url} alt="Logo" className="w-16 h-16 mx-auto mb-4 rounded-2xl object-contain" />
           ) : (
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              style={{ backgroundColor: `${theme.primary}20` }}
+              className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${isNeumorphic ? 'neu-button' : ''}`}
+              style={{ backgroundColor: isNeumorphic ? theme.card : `${theme.primary}20` }}
             >
-              <LogIn className="h-8 w-8" style={{ color: theme.primary }} />
+              {isNeumorphic ? (
+                <Leaf className="h-8 w-8" style={{ color: theme.primary }} />
+              ) : (
+                <LogIn className="h-8 w-8" style={{ color: theme.primary }} />
+              )}
             </div>
           )}
           <h1 className="text-2xl font-bold" style={{ color: theme.text }}>
-            {config?.titulo || 'Sistema de Gestión'}
+            {config?.titulo || (isNeumorphic ? 'MindfulSpace' : 'Sistema de Gestión')}
           </h1>
           <p className="text-sm mt-1" style={{ color: theme.textSecondary }}>
-            {config?.eslogan || 'Ingresá con tus credenciales'}
+            {config?.eslogan || (isNeumorphic ? 'Tu espacio de bienestar' : 'Ingresá con tus credenciales')}
           </p>
         </div>
 
@@ -135,10 +139,10 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all"
+                className={`w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${isNeumorphic ? 'neu-input' : ''}`}
                 style={{
-                  backgroundColor: theme.backgroundSecondary,
-                  border: `1px solid ${theme.border}`,
+                  backgroundColor: isNeumorphic ? theme.card : theme.backgroundSecondary,
+                  border: isNeumorphic ? 'none' : `1px solid ${theme.border}`,
                   color: theme.text,
                 }}
                 placeholder="tu@email.com"
@@ -160,10 +164,10 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all"
+                className={`w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all ${isNeumorphic ? 'neu-input' : ''}`}
                 style={{
-                  backgroundColor: theme.backgroundSecondary,
-                  border: `1px solid ${theme.border}`,
+                  backgroundColor: isNeumorphic ? theme.card : theme.backgroundSecondary,
+                  border: isNeumorphic ? 'none' : `1px solid ${theme.border}`,
                   color: theme.text,
                 }}
                 placeholder="Tu contraseña"
@@ -175,8 +179,8 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading || !email || !password}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: theme.primary }}
+            className={`w-full flex items-center justify-center gap-2 py-3 px-4 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed ${isNeumorphic ? 'neu-gradient-primary' : ''}`}
+            style={{ backgroundColor: isNeumorphic ? undefined : theme.primary }}
           >
             {loading ? (
               <>

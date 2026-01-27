@@ -13,7 +13,11 @@ router = APIRouter(prefix="/medicos")
 def serialize(item: Medico) -> dict:
     data = item.model_dump()
     if item.especialidad:
-        data["especialidad"] = {"id": item.especialidad.id, "nombre": item.especialidad.nombre}
+        data["especialidad"] = {
+            "id": item.especialidad.id,
+            "nombre": item.especialidad.nombre,
+            "color": getattr(item.especialidad, 'color', None)
+        }
     return data
 
 

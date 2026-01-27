@@ -1,7 +1,7 @@
 """API Paciente - Generado automáticamente"""
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from sqlalchemy.orm import selectinload
 
 from core.database import get_db
@@ -24,6 +24,7 @@ async def listar(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     activo: bool | None = None,
+    search: str | None = None,
     db: AsyncSession = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
@@ -32,6 +33,15 @@ async def listar(
     )
     if activo is not None:
         query = query.where(Paciente.activo == activo)
+    if search is not None:
+        search_term = f"%{search}%"
+        query = query.where(
+            or_(
+                Paciente.nombre.ilike(search_term),
+                Paciente.apellido.ilike(search_term),
+                Paciente.documento.ilike(search_term)
+            )
+        )
 
     count_query = select(func.count()).select_from(query.subquery())
     total = await db.scalar(count_query)

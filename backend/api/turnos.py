@@ -13,13 +13,28 @@ router = APIRouter(prefix="/turnos")
 def serialize(item: Turno) -> dict:
     data = item.model_dump()
     if item.paciente:
-        data["paciente"] = {"id": item.paciente.id, "nombre": item.paciente.nombre}
+        data["paciente"] = {
+            "id": item.paciente.id,
+            "nombre": item.paciente.nombre,
+            "apellido": item.paciente.apellido,
+            "documento": item.paciente.documento,
+            "celular": item.paciente.celular
+        }
     if item.medico:
-        data["medico"] = {"id": item.medico.id, "nombre": item.medico.nombre}
+        data["medico"] = {
+            "id": item.medico.id,
+            "nombre": item.medico.nombre,
+            "apellido": item.medico.apellido,
+            "duracion_turno": item.medico.duracion_turno
+        }
     if item.consultorio:
         data["consultorio"] = {"id": item.consultorio.id, "numero": item.consultorio.numero}
     if item.especialidad:
-        data["especialidad"] = {"id": item.especialidad.id, "nombre": item.especialidad.nombre}
+        data["especialidad"] = {
+            "id": item.especialidad.id,
+            "nombre": item.especialidad.nombre,
+            "color": getattr(item.especialidad, 'color', None)
+        }
     if item.obra_social:
         data["obra_social"] = {"id": item.obra_social.id, "nombre": item.obra_social.nombre}
     return data
@@ -30,6 +45,12 @@ async def listar(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     activo: bool | None = None,
+    medico_id: int | None = None,
+    paciente_id: int | None = None,
+    fecha: str | None = None,
+    fecha_desde: str | None = None,
+    fecha_hasta: str | None = None,
+    estado: str | None = None,
     db: AsyncSession = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
@@ -38,6 +59,18 @@ async def listar(
     )
     if activo is not None:
         query = query.where(Turno.activo == activo)
+    if medico_id is not None:
+        query = query.where(Turno.medico_id == medico_id)
+    if paciente_id is not None:
+        query = query.where(Turno.paciente_id == paciente_id)
+    if fecha is not None:
+        query = query.where(Turno.fecha == fecha)
+    if fecha_desde is not None:
+        query = query.where(Turno.fecha >= fecha_desde)
+    if fecha_hasta is not None:
+        query = query.where(Turno.fecha <= fecha_hasta)
+    if estado is not None:
+        query = query.where(Turno.estado == estado)
 
     count_query = select(func.count()).select_from(query.subquery())
     total = await db.scalar(count_query)
