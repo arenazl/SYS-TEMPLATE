@@ -12,10 +12,8 @@ class PedidoBase(SQLModel):
     numero: str
     fecha: date
     cliente_id: int = Field(foreign_key="clientes.id")
-    estado: str | None = None
-    subtotal: float | None = None
+    estado: str
     total: float | None = None
-    notas: str | None = None
 
 
 # ============ Modelo de tabla ============
@@ -43,9 +41,7 @@ class PedidoUpdate(SQLModel):
     fecha: date | None = None
     cliente_id: int | None = None
     estado: str | None = None
-    subtotal: float | None = None
     total: float | None = None
-    notas: str | None = None
 
 
 class PedidoResponse(PedidoBase):

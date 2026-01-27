@@ -1,0 +1,14 @@
+{
+  "nombre": "Tabla",
+  "descripcion": "Tabla HTML completa con todos los registros",
+  "mostrar_grilla": true,
+  "paginacion": 100,
+  "template_html": "<div style=\"overflow-x:auto;margin:16px 0\">\n  <table style=\"width:100%;border-collapse:collapse;font-size:14px\">\n    <thead>\n      <tr style=\"background:#f9fafb;border-bottom:2px solid #e5e7eb\">\n        <th style=\"text-align:left;padding:12px;font-weight:600;color:#374151\">COLUMNA</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr style=\"border-bottom:1px solid #e5e7eb\">\n        <td style=\"padding:12px;color:#111827\">Valor</td>\n      </tr>\n    </tbody>\n  </table>\n</div>",
+  "instrucciones": [
+    "Mostrar TODOS los registros pasados (hasta 100)",
+    "Headers en negrita con fondo gris claro",
+    "Bordes horizontales entre filas",
+    "Sin resumen adicional, solo la tabla",
+    "Formato responsive con overflow-x:auto"
+  ]
+}

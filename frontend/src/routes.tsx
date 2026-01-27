@@ -23,9 +23,14 @@ export const router = createBrowserRouter([
       // Dashboard
       { index: true, element: <Dashboard /> },
 
-      // === RUTA DINÁMICA ===
-      // Una sola ruta maneja TODAS las entidades:
-      // /gestion/productos, /gestion/clientes, /gestion/pedidos, etc.
+      // === MÓDULO CLÍNICA ===
+      // Maneja todas las entidades del módulo clínica:
+      // /gestion/clinica/pacientes, /gestion/clinica/turnos, etc.
+      { path: 'clinica/:entidad', element: <DynamicABM /> },
+
+      // === RUTA DINÁMICA GENERAL ===
+      // Una sola ruta maneja TODAS las entidades fuera de módulos:
+      // /gestion/especialidades, /gestion/medicos, etc.
       { path: ':entidad', element: <DynamicABM /> },
 
       // Configuración / Auditoría (mantiene página con tabs)

@@ -13,7 +13,7 @@
       "name": "Organizacion",
       "plural": "organizaciones",
       "table": "organizaciones",
-      "fields": "nombre:string:req codigo:string:req descripcion:text logo_url:string color_primario:string color_secundario:string direccion:string telefono:string email:email sitio_web:string",
+      "fields": "nombre:string:req codigo:string:req titulo:string eslogan:string descripcion:text logo_url:string color_primario:string color_secundario:string direccion:string telefono:string email:email sitio_web:string",
       "icon": "Building2",
       "order": 1
     },

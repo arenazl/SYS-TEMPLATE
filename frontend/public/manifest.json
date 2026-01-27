@@ -1,11 +1,11 @@
 {
-  "name": "Munify",
-  "short_name": "Munify",
-  "description": "Sistema de gestión municipal",
+  "name": "Hotel Las Margaritas",
+  "short_name": "Las Margaritas",
+  "description": "Donde todos tus sueños se cumplen",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#E67E22",
+  "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -57,7 +57,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["government", "utilities"],
+  "categories": ["business", "utilities"],
   "lang": "es-AR",
   "dir": "ltr",
   "prefer_related_applications": false,

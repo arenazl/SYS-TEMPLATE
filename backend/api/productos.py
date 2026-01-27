@@ -2,13 +2,19 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-
+from sqlalchemy.orm import selectinload
 
 from core.database import get_db
 from core.security import get_current_user
 from models.producto import Producto, ProductoCreate, ProductoUpdate
 
 router = APIRouter(prefix="/productos")
+
+def serialize(item: Producto) -> dict:
+    data = item.model_dump()
+    if item.categoria:
+        data["categoria"] = {"id": item.categoria.id, "nombre": item.categoria.nombre}
+    return data
 
 
 @router.get("")
@@ -19,7 +25,7 @@ async def listar(
     db: AsyncSession = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    query = select(Producto).where(
+    query = select(Producto).options(selectinload(Producto.categoria)).where(
         Producto.organizacion_id == current_user.organizacion_id
     )
     if activo is not None:
@@ -32,7 +38,7 @@ async def listar(
     result = await db.execute(query)
     items = result.scalars().all()
 
-    return {"items": [item.model_dump() for item in items], "total": total}
+    return {"items": [serialize(item) for item in items], "total": total}
 
 
 @router.get("/{id}")
@@ -42,7 +48,7 @@ async def obtener(
     current_user = Depends(get_current_user)
 ):
     result = await db.execute(
-        select(Producto).where(
+        select(Producto).options(selectinload(Producto.categoria)).where(
             Producto.id == id,
             Producto.organizacion_id == current_user.organizacion_id
         )
@@ -50,7 +56,7 @@ async def obtener(
     item = result.scalar_one_or_none()
     if not item:
         raise HTTPException(status_code=404, detail="No encontrado")
-    return item
+    return serialize(item)
 
 
 @router.post("")

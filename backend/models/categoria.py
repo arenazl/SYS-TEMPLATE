@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 class CategoriaBase(SQLModel):
     nombre: str
     descripcion: str | None = None
-    color: str | None = None
 
 
 # ============ Modelo de tabla ============
@@ -33,7 +32,6 @@ class CategoriaUpdate(SQLModel):
     """Para actualizar - todos opcionales"""
     nombre: str | None = None
     descripcion: str | None = None
-    color: str | None = None
 
 
 class CategoriaResponse(CategoriaBase):

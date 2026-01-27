@@ -1,35 +1,126 @@
-import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Tag, Box, Users, Truck, ShoppingCart, Receipt, ArrowLeftRight, Settings, Home, Menu, X, ChevronDown, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import * as LucideIcons from 'lucide-react';
+import { Home, Menu, X, ChevronDown, Building2, Calendar, Users, Wrench, DollarSign, Package, BarChart3, Stethoscope, Receipt, UserRound, ClipboardList, FileText, TestTube, Pill, Heart } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useOrganization } from '../contexts/OrganizationContext';
+import { entities } from '../config/entityRegistry';
+import api from '../lib/api';
 
-const menuItems = [
-  { name: 'Dashboard', path: '/gestion', icon: Home },
-    { name: 'Categoria', path: '/gestion/categorias', icon: Tag },
-    { name: 'Producto', path: '/gestion/productos', icon: Box },
-    { name: 'Cliente', path: '/gestion/clientes', icon: Users },
-    { name: 'Proveedor', path: '/gestion/proveedores', icon: Truck },
-    { name: 'Pedido', path: '/gestion/pedidos', icon: ShoppingCart },
-    { name: 'Compra', path: '/gestion/compras', icon: Receipt },
-    { name: 'Movimiento', path: '/gestion/movimientos', icon: ArrowLeftRight },
+// Helper para obtener icono de Lucide
+function getIcon(iconName: string): React.ComponentType<{ className?: string }> {
+  const icons = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>;
+  return icons[iconName] || icons['FileText'];
+}
+
+// Categorías predefinidas para Clínica
+const defaultCategories = [
+  {
+    name: 'Turnos y Agenda',
+    icon: Calendar,
+    plurals: ['turnos', 'agendas_medico', 'lista_espera', 'ausencias_medico', 'turnos_ausentes', 'cancelaciones_turno']
+  },
+  {
+    name: 'Pacientes',
+    icon: Users,
+    plurals: ['pacientes', 'antecedentes_paciente', 'alertas_medicas', 'historias_clinicas']
+  },
+  {
+    name: 'Médicos y Consultorios',
+    icon: Stethoscope,
+    plurals: ['especialidades', 'medicos', 'consultorios']
+  },
+  {
+    name: 'Historia Clínica',
+    icon: FileText,
+    plurals: ['evoluciones', 'signos_vitales', 'diagnosticos_paciente', 'consentimientos_firmados']
+  },
+  {
+    name: 'Estudios y Prácticas',
+    icon: TestTube,
+    plurals: ['categorias_estudio', 'tipos_estudio', 'ordenes_estudio', 'categorias_practica', 'practicas', 'practicas_realizadas']
+  },
+  {
+    name: 'Recetas y Medicamentos',
+    icon: Pill,
+    plurals: ['medicamentos', 'recetas', 'detalles_receta']
+  },
+  {
+    name: 'Obras Sociales',
+    icon: Heart,
+    plurals: ['obras_sociales', 'planes_obra_social', 'liquidaciones_obra_social']
+  },
+  {
+    name: 'Facturación',
+    icon: Receipt,
+    plurals: ['conceptos_facturacion', 'facturas', 'detalles_factura', 'pagos']
+  },
+  {
+    name: 'Personal',
+    icon: UserRound,
+    plurals: ['departamentos', 'empleados']
+  },
+  {
+    name: 'Inventario',
+    icon: Package,
+    plurals: ['categorias_insumo', 'proveedores', 'insumos', 'movimientos_insumo']
+  },
+  {
+    name: 'Calidad',
+    icon: ClipboardList,
+    plurals: ['encuestas_satisfaccion', 'quejas', 'incidentes', 'auditorias_medicas', 'recordatorios']
+  },
+  {
+    name: 'Configuración Clínica',
+    icon: Wrench,
+    plurals: ['diagnosticos', 'consentimientos', 'feriados_horarios_especiales', 'configuraciones_clinica']
+  }
 ];
 
-const configItems = [
-  { name: 'Auditoria', path: '/gestion/auditoria', icon: Settings },
-];
+interface MenuItem {
+  id: number;
+  nombre: string;
+  path: string;
+  icono: string | null;
+  orden: number | null;
+  parent_id: number | null;
+  activo: boolean;
+}
 
 export default function Sidebar() {
   const { theme } = useTheme();
+  const { org } = useOrganization();
   const location = useLocation();
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [configOpen, setConfigOpen] = useState(false);
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
+    'Turnos y Agenda': true,
+  });
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const [customMenus, setCustomMenus] = useState<MenuItem[]>([]);
+  const [menusLoaded, setMenusLoaded] = useState(false);
+
+  // Cargar menús personalizados desde la BD
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        const res = await api.get('/menus?activo=true&limit=100');
+        const menus = res.data.items || [];
+        setCustomMenus(menus);
+        setMenusLoaded(true);
+      } catch (err) {
+        console.error('Error loading custom menus:', err);
+        setMenusLoaded(true); // Usar default si falla
+      }
+    };
+    fetchMenus();
+  }, []);
+
+  // Toggle categoría
+  const toggleCategory = (categoryName: string) => {
+    setOpenCategories(prev => ({
+      ...prev,
+      [categoryName]: !prev[categoryName]
+    }));
   };
 
   const isActive = (path: string) => {
@@ -37,7 +128,7 @@ export default function Sidebar() {
     return location.pathname.startsWith(path);
   };
 
-  const MenuItem = ({ item }: { item: typeof menuItems[0] }) => {
+  const MenuItem = ({ item }: { item: { name: string; path: string; icon: any } }) => {
     const Icon = item.icon;
     const active = isActive(item.path);
 
@@ -46,7 +137,7 @@ export default function Sidebar() {
         to={item.path}
         onClick={() => setIsOpen(false)}
         className={`
-          flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+          flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 text-sm
           ${active ? 'font-semibold' : 'hover:translate-x-1'}
         `}
         style={{
@@ -54,7 +145,7 @@ export default function Sidebar() {
           color: active ? theme.primary : theme.textSecondary,
         }}
       >
-        <Icon className="h-5 w-5" />
+        <Icon className="h-4 w-4" />
         <span>{item.name}</span>
         {active && (
           <div
@@ -65,6 +156,53 @@ export default function Sidebar() {
       </Link>
     );
   };
+
+  // Construir estructura de menú
+  const buildMenuStructure = () => {
+    if (!menusLoaded) return defaultCategories;
+
+    // Si hay menús personalizados, construir estructura desde BD
+    if (customMenus.length > 0) {
+      // Agrupar por parent_id (null = categorías)
+      const categories = customMenus
+        .filter(m => m.parent_id === null)
+        .sort((a, b) => (a.orden || 0) - (b.orden || 0));
+
+      return categories.map(cat => ({
+        name: cat.nombre,
+        icon: cat.icono ? getIcon(cat.icono) : Home,
+        id: cat.id,
+        items: customMenus
+          .filter(m => m.parent_id === cat.id && m.activo)
+          .sort((a, b) => (a.orden || 0) - (b.orden || 0))
+          .map(item => ({
+            name: item.nombre,
+            path: item.path,
+            icon: item.icono ? getIcon(item.icono) : Home,
+          }))
+      }));
+    }
+
+    // Fallback: usar categorías predefinidas
+    return defaultCategories.map(cat => ({
+      ...cat,
+      items: getCategoryItems(cat.plurals)
+    }));
+  };
+
+  // Genera los items de una categoría (para menú por defecto)
+  const getCategoryItems = (plurals: string[]) => {
+    return Object.values(entities)
+      .filter(e => !e.isDetail && plurals.includes(e.plural))
+      .sort((a, b) => a.order - b.order)
+      .map(e => ({
+        name: e.name,
+        path: `/gestion/${e.plural}`,
+        icon: getIcon(e.icon),
+      }));
+  };
+
+  const menuStructure = buildMenuStructure();
 
   return (
     <>
@@ -97,76 +235,67 @@ export default function Sidebar() {
           borderRight: `1px solid ${theme.border}`,
         }}
       >
-        {/* Logo */}
-        <div className="h-16 flex items-center px-6" style={{ borderBottom: `1px solid ${theme.border}` }}>
-          <h1 className="text-xl font-bold" style={{ color: theme.primary }}>
-            Sistema
+        {/* Logo y nombre de organización */}
+        <div className="h-16 flex items-center gap-3 px-6" style={{ borderBottom: `1px solid ${theme.border}` }}>
+          {org?.icono ? (
+            <span className="text-2xl">{org.icono}</span>
+          ) : (
+            <Building2 className="h-6 w-6" style={{ color: theme.primary }} />
+          )}
+          <h1 className="text-lg font-bold truncate" style={{ color: theme.text }}>
+            {org?.nombre || 'Sistema'}
           </h1>
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-1 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
-          {/* Main menu */}
-          <div className="space-y-1">
-            {menuItems.map((item) => (
-              <MenuItem key={item.path} item={item} />
-            ))}
-          </div>
+        <nav className="p-3 space-y-1 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 64px)' }}>
+          {/* Dashboard */}
+          <MenuItem item={{ name: 'Dashboard', path: '/gestion', icon: Home }} />
 
-          {/* Config section */}
-          <div className="pt-4 mt-4" style={{ borderTop: `1px solid ${theme.border}` }}>
-            <button
-              onClick={() => setConfigOpen(!configOpen)}
-              className="flex items-center justify-between w-full px-4 py-2 text-sm font-medium rounded-lg"
-              style={{ color: theme.textSecondary }}
-            >
-              <span>Configuración</span>
-              <ChevronDown
-                className={`h-4 w-4 transition-transform ${configOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
-            {configOpen && (
-              <div className="mt-1 space-y-1">
-                {configItems.map((item) => (
-                  <MenuItem key={item.path} item={item} />
-                ))}
+          <div className="py-2" />
+
+          {/* Categorías dinámicas */}
+          {menuStructure.map((category) => {
+            const CategoryIcon = category.icon;
+            const isOpen = openCategories[category.name];
+            const categoryItems = category.items || [];
+
+            // Verificar si algún item de esta categoría está activo
+            const hasActiveItem = categoryItems.some(item => isActive(item.path));
+
+            return (
+              <div key={category.name} className="mb-1">
+                {/* Header de categoría */}
+                <button
+                  onClick={() => toggleCategory(category.name)}
+                  className="flex items-center justify-between w-full px-3 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-opacity-50"
+                  style={{
+                    color: hasActiveItem ? theme.primary : theme.textSecondary,
+                    backgroundColor: hasActiveItem ? `${theme.primary}08` : 'transparent',
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <CategoryIcon className="h-4 w-4" />
+                    <span>{category.name}</span>
+                  </div>
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {/* Items de la categoría */}
+                {isOpen && categoryItems.length > 0 && (
+                  <div className="mt-1 ml-2 space-y-0.5">
+                    {categoryItems.map((item) => (
+                      <MenuItem key={item.path} item={item} />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </nav>
+            );
+          })}
 
-        {/* User section */}
-        <div
-          className="absolute bottom-0 left-0 right-0 p-4"
-          style={{ borderTop: `1px solid ${theme.border}` }}
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
-              style={{ backgroundColor: theme.primary }}
-            >
-              {user?.nombre?.charAt(0) || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate" style={{ color: theme.text }}>
-                {user?.nombre} {user?.apellido}
-              </p>
-              <p className="text-xs truncate" style={{ color: theme.textSecondary }}>
-                {user?.email}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-sm transition-colors"
-            style={{ color: theme.textSecondary }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = `${theme.primary}15`}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-          >
-            <LogOut className="h-4 w-4" />
-            Cerrar sesión
-          </button>
-        </div>
+        </nav>
       </aside>
     </>
   );

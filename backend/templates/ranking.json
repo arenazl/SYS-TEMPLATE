@@ -1,0 +1,14 @@
+{
+  "nombre": "Ranking",
+  "descripcion": "Lista ordenada con posiciones destacadas (medallas para top 3)",
+  "mostrar_grilla": false,
+  "paginacion": 20,
+  "template_html": "<div style=\"display:flex;flex-direction:column;gap:12px;margin:16px 0\">\n  <div style=\"background:#ffffff;border:2px solid #fbbf24;border-radius:12px;padding:16px;display:flex;align-items:center;gap:16px\">\n    <div style=\"font-size:32px;font-weight:700;color:#f59e0b\">🥇</div>\n    <div style=\"flex:1\">\n      <div style=\"font-size:18px;font-weight:600;color:#111827\">Nombre</div>\n      <div style=\"font-size:14px;color:#6b7280\">Detalles adicionales</div>\n    </div>\n    <div style=\"font-size:24px;font-weight:700;color:#f59e0b\">VALOR</div>\n  </div>\n</div>",
+  "instrucciones": [
+    "Top 3 con medallas: 🥇🥈🥉 y bordes destacados (#fbbf24, #d1d5db, #cd7f32)",
+    "Del 4 al 10 con números (#4, #5, etc.) y borde simple",
+    "Máximo 20 posiciones",
+    "Destacar valores numéricos a la derecha en grande",
+    "Primera columna como nombre/título principal"
+  ]
+}

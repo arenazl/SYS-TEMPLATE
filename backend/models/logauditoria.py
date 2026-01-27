@@ -1,6 +1,7 @@
 """SQLModel para Logauditoria - Generado automáticamente"""
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
+from sqlalchemy import JSON
 
 if TYPE_CHECKING:
     from .usuario import Usuario
@@ -13,8 +14,8 @@ class LogauditoriaBase(SQLModel):
     accion: str
     entidad: str | None = None
     entidad_id: int | None = None
-    datos_anteriores: dict | None = None
-    datos_nuevos: dict | None = None
+    datos_anteriores: dict | None = Field(default=None, sa_type=JSON)
+    datos_nuevos: dict | None = Field(default=None, sa_type=JSON)
     ip: str | None = None
     user_agent: str | None = None
     organizacion_id: int | None = Field(default=None, foreign_key="organizaciones.id")

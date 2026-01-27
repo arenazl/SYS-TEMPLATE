@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2, Users, Shield, Key, Link, Menu, FileText, Clock, Sliders, Bell } from 'lucide-react';
+import { Building2, Users, Shield, Key, Link, Menu, FileText, Clock, Sliders, Bell, Palette } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import OrganizacionABM from './OrganizacionABM';
 import UsuarioABM from './UsuarioABM';
@@ -12,6 +12,7 @@ import LogauditoriaABM from './LogauditoriaABM';
 import SesionABM from './SesionABM';
 import ParametroABM from './ParametroABM';
 import NotificacionABM from './NotificacionABM';
+import ConfiguracionTemas from './ConfiguracionTemas';
 
 export default function AuditoriaPage() {
   const { theme } = useTheme();
@@ -233,11 +234,29 @@ export default function AuditoriaPage() {
               <Bell className="h-4 w-4" />
               <span className="hidden sm:inline">Notificacion</span>
             </button>
+            <button
+              onClick={() => setActiveTab('temas')}
+              className={`
+                flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+                transition-all duration-200
+                ${activeTab === 'temas'
+                  ? ''
+                  : 'hover:bg-opacity-50'
+                }
+              `}
+              style={{
+                backgroundColor: activeTab === 'temas' ? `${theme.primary}15` : 'transparent',
+                color: activeTab === 'temas' ? theme.primary : theme.textSecondary,
+              }}
+            >
+              <Palette className="h-4 w-4" />
+              <span className="hidden sm:inline">Temas</span>
+            </button>
       </div>
 
       {/* Content */}
       <div>
-        
+
           {activeTab === 'organizacion' && <OrganizacionABM />}
           {activeTab === 'usuario' && <UsuarioABM />}
           {activeTab === 'rol' && <RolABM />}
@@ -249,6 +268,7 @@ export default function AuditoriaPage() {
           {activeTab === 'sesion' && <SesionABM />}
           {activeTab === 'parametro' && <ParametroABM />}
           {activeTab === 'notificacion' && <NotificacionABM />}
+          {activeTab === 'temas' && <ConfiguracionTemas />}
       </div>
     </div>
   );

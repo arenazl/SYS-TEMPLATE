@@ -1,9 +1,6 @@
-# Munify - Robots.txt
+# Timoty Tool - Robots.txt
 User-agent: *
 Allow: /
-
-# Sitemap
-Sitemap: https://munify.com.ar/sitemap.xml
 
 # Bloquear rutas privadas
 Disallow: /gestion/

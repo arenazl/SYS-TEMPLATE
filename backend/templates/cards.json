@@ -1,0 +1,14 @@
+{
+  "nombre": "Cards",
+  "descripcion": "Tarjetas visuales individuales para cada registro",
+  "mostrar_grilla": false,
+  "paginacion": 50,
+  "template_html": "<div style=\"display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin:16px 0\">\n  <div style=\"background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1)\">\n    <h3 style=\"font-size:18px;font-weight:600;color:#111827;margin:0 0 12px 0\">TÍTULO</h3>\n    <div style=\"display:flex;flex-direction:column;gap:8px\">\n      <div style=\"display:flex;justify-content:space-between;font-size:14px\">\n        <span style=\"color:#6b7280\">Campo:</span>\n        <span style=\"color:#111827;font-weight:500\">Valor</span>\n      </div>\n    </div>\n  </div>\n</div>",
+  "instrucciones": [
+    "Crear una card por cada registro",
+    "Primera columna como título principal de la card",
+    "Resto de columnas como pares campo:valor",
+    "Máximo 50 cards, avisar si hay más registros",
+    "Usar estilos inline modernos (Tailwind-like)"
+  ]
+}

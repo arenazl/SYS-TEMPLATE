@@ -50,3 +50,62 @@ export const authApi = {
     api.post('/auth/register', data),
   me: () => api.get('/auth/me'),
 };
+
+// Imagenes (Cloudinary)
+export const imagenApi = {
+  upload: async (file: File, folder: string = 'general'): Promise<{ url: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+
+    const response = await api.post('/imagenes/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      params: { folder }
+    });
+
+    return response.data;
+  },
+  delete: async (publicId: string) => {
+    return api.delete(`/imagenes/delete/${publicId}`);
+  }
+};
+
+// Chat/BI API (para Panel BI)
+export const chatApi = {
+  getPills: async () => {
+    const response = await api.get('/chat/pills');
+    return response.data;
+  },
+  getKPIs: async () => {
+    const response = await api.get('/chat/kpis');
+    return response.data;
+  },
+  getEntities: async () => {
+    const response = await api.get('/chat/entities');
+    return response.data;
+  },
+  getSchema: async () => {
+    const response = await api.get('/chat/schema');
+    return response.data;
+  },
+  consulta: async (consulta: string, formato?: string) => {
+    const response = await api.post('/chat/consulta', { consulta, formato });
+    return response.data;
+  },
+  getConsultasGuardadas: async () => {
+    const response = await api.get('/chat/consultas-guardadas');
+    return response.data;
+  },
+  crearConsultaGuardada: async (data: { nombre: string; pregunta_original: string; sql_query?: string }) => {
+    const response = await api.post('/chat/consultas-guardadas', data);
+    return response.data;
+  },
+  ejecutarConsultaGuardada: async (id: number) => {
+    const response = await api.post(`/chat/consultas-guardadas/${id}/ejecutar`);
+    return response.data;
+  },
+  eliminarConsultaGuardada: async (id: number) => {
+    const response = await api.delete(`/chat/consultas-guardadas/${id}`);
+    return response.data;
+  },
+};

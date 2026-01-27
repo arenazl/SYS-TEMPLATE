@@ -16,6 +16,7 @@
 
 import { FieldConfig } from '../../config/entityRegistry';
 import { ABMInput, ABMTextarea, ABMSelect } from '../ui/ABMPage';
+import { AddressInput } from '../ui/AddressInput';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface DynamicFormProps {
@@ -35,19 +36,48 @@ export function DynamicForm({
 }: DynamicFormProps) {
   const { theme } = useTheme();
 
-  // Filtrar campos que no se muestran
-  const visibleFields = fields.filter(f => !excludeFields.includes(f.name));
+  // Detectar si hay campo direccion con latitud/longitud
+  const hasDireccion = fields.some(f => f.name === 'direccion');
+  const hasLatLng = fields.some(f => f.name === 'latitud') && fields.some(f => f.name === 'longitud');
+
+  // Filtrar campos que no se muestran (incluyendo lat/lng si hay direccion)
+  const hiddenFields = [...excludeFields];
+  if (hasDireccion && hasLatLng) {
+    hiddenFields.push('latitud', 'longitud');
+  }
+  const visibleFields = fields.filter(f => !hiddenFields.includes(f.name));
 
   // Handler genérico
   const handleChange = (name: string, value: unknown) => {
     onChange({ ...formData, [name]: value });
   };
 
+  // Handler para dirección con mapa
+  const handleAddressChange = (data: { direccion: string; latitud?: number; longitud?: number }) => {
+    onChange({
+      ...formData,
+      direccion: data.direccion,
+      latitud: data.latitud,
+      longitud: data.longitud
+    });
+  };
+
   return (
     <>
       {visibleFields.map((field) => (
         <div key={field.name}>
-          {renderField(field, formData, handleChange, fkOptions, theme)}
+          {field.name === 'direccion' && hasLatLng ? (
+            <AddressInput
+              label="Dirección"
+              direccion={String(formData.direccion || '')}
+              latitud={formData.latitud as number | undefined}
+              longitud={formData.longitud as number | undefined}
+              onAddressChange={handleAddressChange}
+              required={field.required}
+            />
+          ) : (
+            renderField(field, formData, handleChange, fkOptions, theme)
+          )}
         </div>
       ))}
     </>

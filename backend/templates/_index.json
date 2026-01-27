@@ -1,0 +1,30 @@
+{
+  "deteccion_automatica": {
+    "reglas": [
+      {
+        "template": "cards",
+        "palabras": ["card", "tarjeta", "tarjetas", "ficha", "fichas"]
+      },
+      {
+        "template": "ranking",
+        "palabras": ["ranking", "top", "mejores", "peores", "primeros", "últimos", "orden"]
+      },
+      {
+        "template": "table",
+        "palabras": ["tabla", "grilla", "listado completo", "todos los datos"]
+      },
+      {
+        "template": "list",
+        "palabras": ["lista", "listar", "enumera", "enumeración"]
+      },
+      {
+        "template": "tabs",
+        "palabras": ["tabs", "pestañas", "por categoría", "agrupado", "agrupados"]
+      },
+      {
+        "template": "dashboard",
+        "palabras": ["dashboard", "panel", "resumen", "overview"]
+      }
+    ]
+  }
+}

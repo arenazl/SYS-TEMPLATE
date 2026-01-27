@@ -91,7 +91,7 @@ function getPythonType(field: ParsedField): string {
     datetime: 'datetime',
     date: 'date',
     email: 'EmailStr',
-    json: 'dict',
+    json: 'dict',  // Se maneja especialmente en getFieldDefinition
     enum: 'str',
     fk: 'int'
   };
@@ -107,6 +107,14 @@ function getFieldDefinition(field: ParsedField): string {
       return `${field.name}: int | None = Field(default=None, foreign_key="${field.fkTable}.id")`;
     }
     return `${field.name}: int = Field(foreign_key="${field.fkTable}.id")`;
+  }
+
+  // Campos JSON usan sa_type=JSON de SQLAlchemy
+  if (field.type === 'json') {
+    if (optional) {
+      return `${field.name}: dict | None = Field(default=None, sa_type=JSON)`;
+    }
+    return `${field.name}: dict = Field(sa_type=JSON)`;
   }
 
   if (optional) {
@@ -130,6 +138,7 @@ function generateSQLModel(entity: EntityConfig, allEntities: EntityConfig[]): st
   const fields = parseFields(entity.fields);
   const needsEmailStr = fields.some(f => f.type === 'email');
   const needsDatetime = fields.some(f => f.type === 'datetime' || f.type === 'date');
+  const needsJson = fields.some(f => f.type === 'json');
   const fkFields = fields.filter(f => f.type === 'fk' && f.fkModel);
   const needsActivo = !entity.isDetail;
 
@@ -138,6 +147,7 @@ function generateSQLModel(entity: EntityConfig, allEntities: EntityConfig[]): st
   imports.push('from typing import Optional, List, TYPE_CHECKING');
   if (needsDatetime) imports.push('from datetime import datetime, date');
   if (needsEmailStr) imports.push('from pydantic import EmailStr');
+  if (needsJson) imports.push('from sqlalchemy import JSON');
 
   // TYPE_CHECKING imports para evitar circular imports
   const typeCheckingImports = fkFields.map(f =>

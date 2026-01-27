@@ -3,16 +3,16 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    pass
+    from .categoria import Categoria
 
 
 # ============ Base (campos compartidos) ============
 class ProductoBase(SQLModel):
     codigo: str
     nombre: str
-    descripcion: str | None = None
     precio: float
     stock: int | None = None
+    categoria_id: int = Field(foreign_key="categorias.id")
 
 
 # ============ Modelo de tabla ============
@@ -23,6 +23,8 @@ class Producto(ProductoBase, table=True):
     organizacion_id: int | None = Field(default=None, foreign_key="organizaciones.id")
     activo: bool = Field(default=True)
 
+    # Relationships
+    categoria: Optional["Categoria"] = Relationship()
 
 
 # ============ Schemas para API ============
@@ -35,9 +37,9 @@ class ProductoUpdate(SQLModel):
     """Para actualizar - todos opcionales"""
     codigo: str | None = None
     nombre: str | None = None
-    descripcion: str | None = None
     precio: float | None = None
     stock: int | None = None
+    categoria_id: int | None = None
 
 
 class ProductoResponse(ProductoBase):

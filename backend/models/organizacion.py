@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 class OrganizacionBase(SQLModel):
     nombre: str
     codigo: str
+    titulo: str | None = None
+    eslogan: str | None = None
     descripcion: str | None = None
     logo_url: str | None = None
     color_primario: str | None = None
@@ -41,6 +43,8 @@ class OrganizacionUpdate(SQLModel):
     """Para actualizar - todos opcionales"""
     nombre: str | None = None
     codigo: str | None = None
+    titulo: str | None = None
+    eslogan: str | None = None
     descripcion: str | None = None
     logo_url: str | None = None
     color_primario: str | None = None

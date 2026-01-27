@@ -37,7 +37,7 @@ landing_path = Path(__file__).parent / "landing_dist"
 async def lifespan(app: FastAPI):
     # Startup
     print(f"\n{'='*50}", flush=True)
-    print(f"  Sistema de Reclamos v1.0.0", flush=True)
+    print(f"  Timoty Tool v1.0.0", flush=True)
     print(f"  http://localhost:{settings.PORT}", flush=True)
     print(f"{'='*50}\n", flush=True)
     print(f"Inicializando base de datos...", flush=True)
@@ -50,8 +50,8 @@ async def lifespan(app: FastAPI):
     print("Cerrado OK", flush=True)
 
 app = FastAPI(
-    title="Sistema de Reclamos Municipales",
-    description="API para gestión de reclamos vecinales",
+    title="Timoty Tool",
+    description="Sistema para gestión de operaciones",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -114,7 +114,7 @@ async def log_requests(request: Request, call_next):
     if request.url.path.startswith("/api"):
         # Log request (sin leer body para no consumir el stream)
         print(f"\n{'='*60}", flush=True)
-        print(f"📤 REQUEST: {request.method} {request.url.path}", flush=True)
+        print(f"REQUEST: {request.method} {request.url.path}", flush=True)
         query = dict(request.query_params)
         if query:
             print(f"   Query: {json.dumps(query, indent=2, ensure_ascii=False)}", flush=True)
@@ -129,7 +129,7 @@ async def log_requests(request: Request, call_next):
 
         # Log response
         response_str = response_body.decode('utf-8') if response_body else "(empty)"
-        print(f"📥 RESPONSE: {response.status_code}", flush=True)
+        print(f"RESPONSE: {response.status_code}", flush=True)
 
         if len(response_str) < 5000:
             # Intentar formatear como JSON
@@ -245,7 +245,7 @@ async def health():
 @app.get("/")
 async def root():
     return {
-        "service": "Munify API",
+        "service": "API",
         "status": "running",
         "docs": "/docs",
         "health": "/health"

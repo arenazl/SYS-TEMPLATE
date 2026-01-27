@@ -1,6 +1,6 @@
-# CLIENT INTERFACE (API)
+# API Client (Frontend)
 
-Este documento describe la interfaz completa del cliente para comunicarse con el backend. Incluye todos los endpoints, métodos y parámetros disponibles.
+Este documento describe cómo funciona el cliente API en el frontend y cómo interactuar con el backend.
 
 ---
 
@@ -16,19 +16,26 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 ### Variables de Entorno
 
 ```bash
-# frontend/.env
-VITE_API_URL=http://localhost:8001/api
+# frontend/.env.local (desarrollo)
+VITE_API_URL=http://localhost:8000/api
+
+# frontend/.env.production (producción)
+VITE_API_URL=https://tu-backend.herokuapp.com/api
 ```
 
 ### Instancia de Axios
 
 ```typescript
+import axios from 'axios';
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+export { api };
 ```
 
 ---
@@ -69,481 +76,205 @@ api.interceptors.response.use(
 
 ---
 
-## Endpoints por Módulo
+## Endpoints Automáticos (Generados)
 
-### 1. Autenticación (`/api/auth`)
+Cuando usás el generador de ABMs (`npm run sync`), se crean automáticamente endpoints CRUD para cada entidad.
 
-| Método | Endpoint | Descripción | Body/Params |
+### Patrón de Endpoints Generados
+
+Para una entidad `Producto`:
+
+| Método | Endpoint | Descripción | Params/Body |
 |--------|----------|-------------|-------------|
-| POST | `/auth/login` | Iniciar sesión | `username`, `password` (form-urlencoded) |
-| POST | `/auth/register` | Registrar usuario | `{ email, password, nombre, apellido }` |
-| GET | `/auth/me` | Obtener usuario actual | - |
+| GET | `/api/productos` | Listar todos | `?activo=true/false` |
+| GET | `/api/productos/{id}` | Obtener uno por ID | - |
+| POST | `/api/productos` | Crear nuevo | `{ nombre, precio, ... }` |
+| PUT | `/api/productos/{id}` | Actualizar completo | `{ nombre, precio, ... }` |
+| DELETE | `/api/productos/{id}` | Eliminar (soft delete) | - |
+
+### Ejemplo: Cliente API Genérico
+
+```typescript
+// frontend/src/lib/api.ts
+export const createCrudApi = (entityPlural: string) => ({
+  getAll: (activo?: boolean) =>
+    api.get(`/${entityPlural}`, {
+      params: activo !== undefined ? { activo } : {}
+    }),
+
+  getOne: (id: number) =>
+    api.get(`/${entityPlural}/${id}`),
+
+  create: (data: Record<string, unknown>) =>
+    api.post(`/${entityPlural}`, data),
+
+  update: (id: number, data: Record<string, unknown>) =>
+    api.put(`/${entityPlural}/${id}`, data),
+
+  delete: (id: number) =>
+    api.delete(`/${entityPlural}/${id}`),
+});
+
+// Uso
+export const productosApi = createCrudApi('productos');
+export const clientesApi = createCrudApi('clientes');
+export const reservasApi = createCrudApi('reservas');
+```
+
+---
+
+## Endpoints de Autenticación
+
+### `/api/auth/login` - POST
+
+Iniciar sesión con email y password:
 
 ```typescript
 export const authApi = {
   login: (email: string, password: string) =>
-    api.post('/auth/login', new URLSearchParams({ username: email, password }), {
+    api.post('/auth/login', new URLSearchParams({
+      username: email,
+      password
+    }), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     }),
-  register: (data: { email: string; password: string; nombre: string; apellido: string }) =>
-    api.post('/auth/register', data),
-  me: () => api.get('/auth/me'),
-};
-```
-
----
-
-### 2. Reclamos (`/api/reclamos`)
-
-| Método | Endpoint | Descripción | Params/Body |
-|--------|----------|-------------|-------------|
-| GET | `/reclamos` | Listar todos los reclamos | `?estado=&categoria_id=&zona_id=` |
-| GET | `/reclamos/mis-reclamos` | Mis reclamos (ciudadano) | - |
-| GET | `/reclamos/{id}` | Obtener un reclamo | - |
-| GET | `/reclamos/{id}/historial` | Historial de cambios | - |
-| POST | `/reclamos` | Crear reclamo | `{ titulo, descripcion, categoria_id, ... }` |
-| PUT | `/reclamos/{id}` | Actualizar reclamo | `{ ... }` |
-| PATCH | `/reclamos/{id}` | Cambiar estado (Kanban) | `?nuevo_estado=` |
-| POST | `/reclamos/{id}/asignar` | Asignar a cuadrilla | `{ cuadrilla_id, fecha_programada?, ... }` |
-| POST | `/reclamos/{id}/iniciar` | Iniciar trabajo | - |
-| POST | `/reclamos/{id}/resolver` | Resolver reclamo | `{ resolucion }` |
-| POST | `/reclamos/{id}/rechazar` | Rechazar reclamo | `{ motivo, descripcion? }` |
-| POST | `/reclamos/{id}/upload` | Subir foto | `FormData(file)` + `?etapa=` |
-| GET | `/reclamos/empleado/{id}/disponibilidad/{fecha}` | Disponibilidad empleado | `?buscar_siguiente=` |
-| GET | `/reclamos/{id}/sugerencia-asignacion` | Sugerencia IA de asignación | - |
-
-```typescript
-export const reclamosApi = {
-  getAll: (params?: Record<string, string>) => api.get('/reclamos', { params }),
-  getMisReclamos: () => api.get('/reclamos/mis-reclamos'),
-  getOne: (id: number) => api.get(`/reclamos/${id}`),
-  getHistorial: (id: number) => api.get(`/reclamos/${id}/historial`),
-  create: (data: Record<string, unknown>) => api.post('/reclamos', data),
-  update: (id: number, data: Record<string, unknown>) => api.put(`/reclamos/${id}`, data),
-  asignar: (id: number, data: {
-    cuadrilla_id: number;
-    fecha_programada?: string;
-    hora_inicio?: string;
-    hora_fin?: string;
-    comentario?: string
-  }) => api.post(`/reclamos/${id}/asignar`, data),
-  iniciar: (id: number) => api.post(`/reclamos/${id}/iniciar`),
-  resolver: (id: number, data: { resolucion: string }) => api.post(`/reclamos/${id}/resolver`, data),
-  rechazar: (id: number, data: { motivo: string; descripcion?: string }) =>
-    api.post(`/reclamos/${id}/rechazar`, data),
-  cambiarEstado: (id: number, estado: string) =>
-    api.patch(`/reclamos/${id}`, null, { params: { nuevo_estado: estado } }),
-  upload: (id: number, file: File, etapa: string) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    return api.post(`/reclamos/${id}/upload?etapa=${etapa}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-  getDisponibilidadEmpleado: (empleadoId: number, fecha: string, buscarSiguiente: boolean = false) =>
-    api.get(`/reclamos/empleado/${empleadoId}/disponibilidad/${fecha}`, { params: { buscar_siguiente: buscarSiguiente } }),
-  getSugerenciaAsignacion: (reclamoId: number) =>
-    api.get(`/reclamos/${reclamoId}/sugerencia-asignacion`),
-};
-```
-
----
-
-### 3. Categorías (`/api/categorias`)
-
-| Método | Endpoint | Descripción | Params/Body |
-|--------|----------|-------------|-------------|
-| GET | `/categorias` | Listar categorías | `?activo=true/false` |
-| GET | `/categorias/{id}` | Obtener una | - |
-| POST | `/categorias` | Crear | `{ nombre, descripcion, ... }` |
-| PUT | `/categorias/{id}` | Actualizar | `{ ... }` |
-| DELETE | `/categorias/{id}` | Eliminar | - |
-
-```typescript
-export const categoriasApi = {
-  getAll: (activo?: boolean) => api.get('/categorias', { params: activo !== undefined ? { activo } : {} }),
-  getOne: (id: number) => api.get(`/categorias/${id}`),
-  create: (data: Record<string, unknown>) => api.post('/categorias', data),
-  update: (id: number, data: Record<string, unknown>) => api.put(`/categorias/${id}`, data),
-  delete: (id: number) => api.delete(`/categorias/${id}`),
-};
-```
-
----
-
-### 4. Zonas (`/api/zonas`)
-
-| Método | Endpoint | Descripción | Params/Body |
-|--------|----------|-------------|-------------|
-| GET | `/zonas` | Listar zonas | `?activo=true/false` |
-| GET | `/zonas/{id}` | Obtener una | - |
-| POST | `/zonas` | Crear | `{ nombre, codigo, ... }` |
-| PUT | `/zonas/{id}` | Actualizar | `{ ... }` |
-| DELETE | `/zonas/{id}` | Eliminar | - |
-
-```typescript
-export const zonasApi = {
-  getAll: (activo?: boolean) => api.get('/zonas', { params: activo !== undefined ? { activo } : {} }),
-  getOne: (id: number) => api.get(`/zonas/${id}`),
-  create: (data: Record<string, unknown>) => api.post('/zonas', data),
-  update: (id: number, data: Record<string, unknown>) => api.put(`/zonas/${id}`, data),
-  delete: (id: number) => api.delete(`/zonas/${id}`),
-};
-```
-
----
-
-### 5. Cuadrillas / Empleados (`/api/cuadrillas`)
-
-| Método | Endpoint | Descripción | Params/Body |
-|--------|----------|-------------|-------------|
-| GET | `/cuadrillas` | Listar cuadrillas | `?activo=true/false` |
-| GET | `/cuadrillas/{id}` | Obtener una | - |
-| POST | `/cuadrillas` | Crear | `{ nombre, especialidad, ... }` |
-| PUT | `/cuadrillas/{id}` | Actualizar | `{ ... }` |
-| DELETE | `/cuadrillas/{id}` | Eliminar | - |
-
-```typescript
-export const cuadrillasApi = {
-  getAll: (activo?: boolean) => api.get('/cuadrillas', { params: activo !== undefined ? { activo } : {} }),
-  getOne: (id: number) => api.get(`/cuadrillas/${id}`),
-  create: (data: Record<string, unknown>) => api.post('/cuadrillas', data),
-  update: (id: number, data: Record<string, unknown>) => api.put(`/cuadrillas/${id}`, data),
-  delete: (id: number) => api.delete(`/cuadrillas/${id}`),
 };
 
-// Alias
-export const empleadosApi = cuadrillasApi;
+// Uso
+const response = await authApi.login('admin@hotel.com', 'admin123');
+const { access_token, user } = response.data;
+localStorage.setItem('token', access_token);
+localStorage.setItem('user', JSON.stringify(user));
 ```
 
----
-
-### 6. Usuarios (`/api/users`)
-
-| Método | Endpoint | Descripción | Params/Body |
-|--------|----------|-------------|-------------|
-| GET | `/users` | Listar usuarios | - |
-| GET | `/users/{id}` | Obtener uno | - |
-| POST | `/users` | Crear | `{ email, password, nombre, rol, ... }` |
-| PUT | `/users/{id}` | Actualizar | `{ ... }` |
-| DELETE | `/users/{id}` | Eliminar | - |
-
-```typescript
-export const usersApi = {
-  getAll: () => api.get('/users'),
-  getOne: (id: number) => api.get(`/users/${id}`),
-  create: (data: Record<string, unknown>) => api.post('/users', data),
-  update: (id: number, data: Record<string, unknown>) => api.put(`/users/${id}`, data),
-  delete: (id: number) => api.delete(`/users/${id}`),
-};
-```
-
----
-
-### 7. Dashboard (`/api/dashboard`)
-
-| Método | Endpoint | Descripción | Params |
-|--------|----------|-------------|--------|
-| GET | `/dashboard/stats` | Estadísticas generales | - |
-| GET | `/dashboard/por-categoria` | Reclamos por categoría | - |
-| GET | `/dashboard/por-zona` | Reclamos por zona | - |
-| GET | `/dashboard/tendencia` | Tendencia temporal | `?dias=30` |
-
-```typescript
-export const dashboardApi = {
-  getStats: () => api.get('/dashboard/stats'),
-  getPorCategoria: () => api.get('/dashboard/por-categoria'),
-  getPorZona: () => api.get('/dashboard/por-zona'),
-  getTendencia: (dias?: number) => api.get('/dashboard/tendencia', { params: dias ? { dias } : {} }),
-};
-```
-
----
-
-### 8. Notificaciones (`/api/notificaciones`)
-
-| Método | Endpoint | Descripción | Params |
-|--------|----------|-------------|--------|
-| GET | `/notificaciones` | Listar notificaciones | `?leidas=true/false` |
-| GET | `/notificaciones/count` | Contador de no leídas | - |
-| PUT | `/notificaciones/{id}/leer` | Marcar como leída | - |
-| PUT | `/notificaciones/leer-todas` | Marcar todas leídas | - |
-
-```typescript
-export const notificacionesApi = {
-  getAll: (leidas?: boolean) => api.get('/notificaciones', { params: leidas !== undefined ? { leidas } : {} }),
-  getCount: () => api.get('/notificaciones/count'),
-  marcarLeida: (id: number) => api.put(`/notificaciones/${id}/leer`),
-  marcarTodasLeidas: () => api.put('/notificaciones/leer-todas'),
-};
-```
-
----
-
-### 9. Configuración (`/api/configuracion`)
-
-| Método | Endpoint | Descripción | Params/Body |
-|--------|----------|-------------|-------------|
-| GET | `/configuracion` | Listar todas | Solo admin |
-| GET | `/configuracion/{clave}` | Obtener una | Solo admin |
-| PUT | `/configuracion/{clave}` | Actualizar | `{ valor }` |
-| GET | `/configuracion/publica/municipio` | Datos públicos del municipio | Sin auth |
-| GET | `/configuracion/barrios/{municipio}` | Buscar barrios (OSM) | Solo admin |
-| POST | `/configuracion/cargar-barrios` | Cargar barrios como zonas | `[nombres]` |
-
-```typescript
-export const configuracionApi = {
-  getAll: () => api.get('/configuracion'),
-  get: (clave: string) => api.get(`/configuracion/${clave}`),
-  update: (clave: string, data: { valor: string }) => api.put(`/configuracion/${clave}`, data),
-};
-```
-
----
-
-### 10. Chat IA (`/api/chat`)
-
-| Método | Endpoint | Descripción | Body |
-|--------|----------|-------------|------|
-| POST | `/chat` | Enviar mensaje | `{ message, history: [{role, content}] }` |
-| GET | `/chat/status` | Estado del servicio Ollama | - |
-
-```typescript
-export const chatApi = {
-  sendMessage: async (message: string, history: Array<{role: string, content: string}> = []) => {
-    const response = await api.post('/chat', { message, history });
-    return response.data;
-  },
-  getStatus: () => api.get('/chat/status'),
-};
-```
-
----
-
-### 11. SLA (`/api/sla`)
-
-| Método | Endpoint | Descripción | Params/Body |
-|--------|----------|-------------|-------------|
-| GET | `/sla/config` | Listar configuraciones SLA | - |
-| POST | `/sla/config` | Crear configuración | `{ categoria_id?, prioridad?, tiempo_respuesta, ... }` |
-| PUT | `/sla/config/{id}` | Actualizar | `{ ... }` |
-| DELETE | `/sla/config/{id}` | Eliminar | - |
-| GET | `/sla/estado-reclamos` | Estado SLA de reclamos | `?solo_activos=&solo_vencidos=` |
-| GET | `/sla/resumen` | Resumen de SLA | - |
-| GET | `/sla/alertas` | Alertas activas | - |
-
-```typescript
-export const slaApi = {
-  getConfigs: () => api.get('/sla/config'),
-  createConfig: (data: {
-    categoria_id?: number;
-    prioridad?: number;
-    tiempo_respuesta: number;
-    tiempo_resolucion: number;
-    tiempo_alerta_amarilla: number;
-    activo: boolean;
-  }) => api.post('/sla/config', data),
-  updateConfig: (id: number, data: { ... }) => api.put(`/sla/config/${id}`, data),
-  deleteConfig: (id: number) => api.delete(`/sla/config/${id}`),
-  getEstadoReclamos: (soloActivos?: boolean, soloVencidos?: boolean) =>
-    api.get('/sla/estado-reclamos', { params: { solo_activos: soloActivos, solo_vencidos: soloVencidos } }),
-  getResumen: () => api.get('/sla/resumen'),
-  getAlertas: () => api.get('/sla/alertas'),
-};
-```
-
----
-
-### 12. Exportación (`/api/exportar`)
-
-| Método | Endpoint | Descripción | Params |
-|--------|----------|-------------|--------|
-| GET | `/exportar/reclamos/csv` | Exportar reclamos | `?estado=&categoria_id=&fecha_desde=&fecha_hasta=` |
-| GET | `/exportar/estadisticas/csv` | Exportar estadísticas | `?dias=` |
-| GET | `/exportar/empleados/csv` | Exportar empleados | - |
-| GET | `/exportar/sla/csv` | Exportar SLA | - |
-
-```typescript
-export const exportarApi = {
-  reclamosCsv: (params?: {
-    estado?: string;
-    categoria_id?: number;
-    zona_id?: number;
-    cuadrilla_id?: number;
-    fecha_desde?: string;
-    fecha_hasta?: string;
-  }) => api.get('/exportar/reclamos/csv', { params, responseType: 'blob' }),
-  estadisticasCsv: (dias?: number) =>
-    api.get('/exportar/estadisticas/csv', { params: { dias }, responseType: 'blob' }),
-  empleadosCsv: () =>
-    api.get('/exportar/empleados/csv', { responseType: 'blob' }),
-  slaCsv: () =>
-    api.get('/exportar/sla/csv', { responseType: 'blob' }),
-};
-```
-
----
-
-### 13. Analytics Avanzados (`/api/analytics`)
-
-| Método | Endpoint | Descripción | Params |
-|--------|----------|-------------|--------|
-| GET | `/analytics/heatmap` | Mapa de calor | `?dias=&categoria_id=` |
-| GET | `/analytics/clusters` | Clusters geográficos | `?radio_km=&min_reclamos=&dias=` |
-| GET | `/analytics/distancias` | Análisis de distancias | `?dias=` |
-| GET | `/analytics/cobertura` | Cobertura por zona | `?dias=` |
-| GET | `/analytics/tiempo-resolucion` | Tiempos de resolución | `?dias=` |
-| GET | `/analytics/rendimiento-cuadrillas` | Rendimiento cuadrillas | `?semanas=` |
-
-```typescript
-export const analyticsApi = {
-  getHeatmap: (dias?: number, categoriaId?: number) =>
-    api.get('/analytics/heatmap', { params: { dias, categoria_id: categoriaId } }),
-  getClusters: (radioKm?: number, minReclamos?: number, dias?: number) =>
-    api.get('/analytics/clusters', { params: { radio_km: radioKm, min_reclamos: minReclamos, dias } }),
-  getDistancias: (dias?: number) =>
-    api.get('/analytics/distancias', { params: { dias } }),
-  getCobertura: (dias?: number) =>
-    api.get('/analytics/cobertura', { params: { dias } }),
-  getTiempoResolucion: (dias?: number) =>
-    api.get('/analytics/tiempo-resolucion', { params: { dias } }),
-  getRendimientoCuadrillas: (semanas?: number) =>
-    api.get('/analytics/rendimiento-cuadrillas', { params: { semanas } }),
-};
-```
-
----
-
-### 14. Portal Público (`/api/publico`) - SIN AUTENTICACIÓN
-
-Este módulo permite a los ciudadanos consultar información y crear reclamos con login mínimo (solo email para seguimiento).
-
-| Método | Endpoint | Descripción | Params |
-|--------|----------|-------------|--------|
-| GET | `/publico/estadisticas` | Estadísticas públicas del municipio | - |
-| GET | `/publico/reclamos-resueltos` | Reclamos resueltos recientes | `?categoria_id=&zona_id=&dias=30&limit=50` |
-| GET | `/publico/mapa` | Puntos para mapa público | `?estado=&categoria_id=&dias=30` |
-| GET | `/publico/consultar/{codigo}` | Consultar estado por número de reclamo | - |
-| GET | `/publico/categorias` | Lista de categorías activas | - |
-| GET | `/publico/zonas` | Lista de zonas activas | - |
-| GET | `/publico/tendencias` | Tendencias de reclamos | `?dias=30` |
-
-```typescript
-// Agregar a api.ts
-export const portalPublicoApi = {
-  // Estadísticas generales del municipio
-  getEstadisticas: () => api.get('/publico/estadisticas'),
-
-  // Reclamos resueltos (mostrar trabajo del municipio)
-  getReclamosResueltos: (params?: {
-    categoria_id?: number;
-    zona_id?: number;
-    dias?: number;
-    limit?: number;
-  }) => api.get('/publico/reclamos-resueltos', { params }),
-
-  // Datos para mapa público
-  getMapa: (params?: {
-    estado?: string;
-    categoria_id?: number;
-    dias?: number;
-  }) => api.get('/publico/mapa', { params }),
-
-  // Consultar estado de reclamo por número (sin login)
-  consultarReclamo: (codigo: number) => api.get(`/publico/consultar/${codigo}`),
-
-  // Categorías disponibles
-  getCategorias: () => api.get('/publico/categorias'),
-
-  // Zonas disponibles
-  getZonas: () => api.get('/publico/zonas'),
-
-  // Tendencias
-  getTendencias: (dias?: number) => api.get('/publico/tendencias', { params: dias ? { dias } : {} }),
-};
-```
-
-#### Flujo del Ciudadano (Menú Simplificado)
-
-El portal público permite:
-
-1. **Ver estadísticas** del municipio sin login
-2. **Consultar estado** de un reclamo por número
-3. **Ver mapa** de reclamos en la zona
-4. **Crear reclamo** con registro mínimo (solo email)
-5. **Ver historial** de sus reclamos
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                 PORTAL CIUDADANO                        │
-├─────────────────────────────────────────────────────────┤
-│  [🔍 Consultar Reclamo]   [📍 Ver Mapa]   [📊 Stats]   │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │  Ingrese número de reclamo: [_________]  [🔍]   │   │
-│  └─────────────────────────────────────────────────┘   │
-│                                                         │
-│  ─────────── O ───────────                             │
-│                                                         │
-│  [➕ Crear Nuevo Reclamo]                               │
-│  (Solo necesita email para seguimiento)                 │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-#### Respuesta de Consulta de Reclamo
-
+**Response:**
 ```json
 {
-  "id": 123,
-  "titulo": "Bache en calle San Martín",
-  "descripcion": "Hay un bache grande...",
-  "estado": "en_proceso",
-  "categoria": "Vialidad",
-  "zona": "Centro",
-  "direccion": "San Martín 450",
-  "prioridad": 3,
-  "fecha_creacion": "2025-01-10T14:30:00",
-  "dias_abierto": 4,
-  "fecha_programada": "2025-01-16T08:00:00",
-  "fecha_resolucion": null,
-  "historial": [
-    {"estado": "nuevo", "accion": "Reclamo creado", "fecha": "2025-01-10T14:30:00"},
-    {"estado": "asignado", "accion": "Asignado a cuadrilla", "fecha": "2025-01-11T09:00:00"},
-    {"estado": "en_proceso", "accion": "Trabajo iniciado", "fecha": "2025-01-14T08:30:00"}
-  ]
+  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "email": "admin@hotel.com",
+    "nombre": "Admin",
+    "apellido": "Sistema",
+    "rol": "admin",
+    "organizacion_id": 1
+  }
+}
+```
+
+### `/api/auth/me` - GET
+
+Obtener datos del usuario autenticado:
+
+```typescript
+export const authApi = {
+  me: () => api.get('/auth/me'),
+};
+
+// Uso
+const response = await authApi.me();
+const user = response.data;
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "email": "admin@hotel.com",
+  "nombre": "Admin",
+  "apellido": "Sistema",
+  "rol": "admin",
+  "organizacion_id": 1,
+  "organizacion": {
+    "nombre": "Hotel Las Margaritas",
+    "titulo": "Las Margaritas",
+    "eslogan": "Donde todos tus sueños se cumplen"
+  }
 }
 ```
 
 ---
 
-## Otros Routers del Backend
+## Subida de Archivos (Cloudinary)
 
-Estos endpoints existen en el backend pero aún no tienen cliente definido en `api.ts`:
+### Endpoint `/api/imagen/upload` - POST
 
-| Prefijo | Módulo | Descripción |
-|---------|--------|-------------|
-| `/api/whatsapp` | WhatsApp | Integración con WhatsApp |
-| `/api/turnos` | Turnos | Gestión de turnos de empleados |
-| `/api/calificaciones` | Calificaciones | Calificaciones de reclamos |
-| `/api/escalado` | Auto-Escalado | Sistema de escalamiento automático |
-| `/api/emails` | Emails | Envío de correos |
-| `/ws` | WebSocket | Conexión en tiempo real |
+```typescript
+export const imagenApi = {
+  upload: async (file: File, carpeta?: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (carpeta) {
+      formData.append('carpeta', carpeta);
+    }
+
+    return api.post('/imagen/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
+// Uso en un componente
+const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const response = await imagenApi.upload(file, 'productos');
+    const imageUrl = response.data.url;
+    // Guardar imageUrl en el formulario
+  } catch (error) {
+    console.error('Error subiendo imagen:', error);
+  }
+};
+```
+
+**Response:**
+```json
+{
+  "url": "https://res.cloudinary.com/demo/image/upload/v1234567890/productos/abc123.jpg",
+  "public_id": "productos/abc123",
+  "width": 1920,
+  "height": 1080,
+  "format": "jpg"
+}
+```
 
 ---
 
-## WebSocket
+## Master-Detail (Facturas)
 
-### Conexión
+Para entidades con relación master-detail (ej: Factura + DetalleFactura):
 
 ```typescript
-const ws = new WebSocket(`ws://localhost:8001/ws/${userId}`);
+export const facturasApi = {
+  // CRUD básico
+  ...createCrudApi('facturas'),
 
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  // Manejar notificación en tiempo real
+  // Obtener factura con sus detalles
+  getConDetalles: (id: number) =>
+    api.get(`/facturas/${id}/detalles`),
+
+  // Crear factura con detalles
+  createConDetalles: (data: {
+    factura: Record<string, unknown>;
+    detalles: Record<string, unknown>[];
+  }) => api.post('/facturas/con-detalles', data),
 };
+
+// Uso
+const response = await facturasApi.createConDetalles({
+  factura: {
+    cliente_id: 1,
+    fecha: '2025-01-20',
+    total: 1500
+  },
+  detalles: [
+    { producto_id: 1, cantidad: 2, precio_unitario: 500 },
+    { producto_id: 3, cantidad: 1, precio_unitario: 500 }
+  ]
+});
 ```
 
 ---
@@ -560,43 +291,120 @@ ws.onmessage = (event) => {
 | 401 | Unauthorized | Token inválido/expirado (redirect a login) |
 | 403 | Forbidden | Sin permisos |
 | 404 | Not Found | Recurso no existe |
-| 422 | Validation Error | Errores de validación |
-| 429 | Too Many Requests | Rate limit excedido |
-| 500 | Server Error | Error interno |
+| 422 | Validation Error | Errores de validación Pydantic |
+| 500 | Server Error | Error interno del servidor |
 
-### Rate Limiting
+### Captura de Errores en Componentes
 
-La API tiene límites configurados:
-- **Default**: 100 requests/minuto
-- **Auth** (login/register): 10 requests/minuto
-- **Create** (crear reclamos): 30 requests/minuto
-- **Upload** (subir fotos): 20 requests/minuto
+```typescript
+try {
+  await productosApi.create({ nombre: '', precio: -10 });
+} catch (error: any) {
+  if (error.response?.status === 422) {
+    // Error de validación
+    const validationErrors = error.response.data.detail;
+    console.error('Errores de validación:', validationErrors);
+  } else if (error.response?.status === 401) {
+    // Token expirado - ya se maneja en interceptor
+  } else {
+    console.error('Error desconocido:', error.message);
+  }
+}
+```
 
 ---
 
-## Ejemplo de Uso
+## Filtros Multi-Tenant Automáticos
+
+El backend filtra automáticamente por `organizacion_id` del usuario autenticado.
 
 ```typescript
-import { reclamosApi, authApi } from '@/lib/api';
+// Frontend: simplemente hace GET /api/productos
+const response = await productosApi.getAll();
 
-// Login
-const loginResponse = await authApi.login('user@mail.com', 'password');
-localStorage.setItem('token', loginResponse.data.access_token);
+// Backend: automáticamente filtra
+// SELECT * FROM productos WHERE organizacion_id = <org_del_usuario_logueado>
+```
 
-// Obtener reclamos
-const reclamos = await reclamosApi.getAll({ estado: 'pendiente' });
+**NO necesitás** pasar `organizacion_id` manualmente en los requests. El backend lo maneja automáticamente usando el token JWT.
 
-// Crear reclamo
-const nuevoReclamo = await reclamosApi.create({
-  titulo: 'Bache en calle principal',
-  descripcion: 'Hay un bache grande...',
-  categoria_id: 1,
-  zona_id: 2,
-  latitud: -34.6037,
-  longitud: -58.3816,
+---
+
+## Ejemplo Completo: CRUD de Producto
+
+```typescript
+import { productosApi } from '@/lib/api';
+
+// Listar todos (solo de mi organización)
+const response = await productosApi.getAll();
+const productos = response.data;
+
+// Obtener uno
+const producto = await productosApi.getOne(1);
+
+// Crear
+const nuevoProducto = await productosApi.create({
+  codigo: 'PROD-001',
+  nombre: 'Producto Demo',
+  precio: 1500.00,
+  activo: true
 });
 
-// Subir foto
-const file = event.target.files[0];
-await reclamosApi.upload(nuevoReclamo.data.id, file, 'inicial');
+// Actualizar
+await productosApi.update(1, {
+  nombre: 'Producto Actualizado',
+  precio: 1800.00
+});
+
+// Eliminar (soft delete)
+await productosApi.delete(1);
+```
+
+---
+
+## Componente DynamicABM
+
+El componente `DynamicABM` consume automáticamente estos endpoints usando el `entityPlural` del registro de entidades:
+
+```typescript
+// frontend/src/config/entityRegistry.ts
+export const entityRegistry = {
+  'Producto': {
+    singular: 'Producto',
+    plural: 'productos',  // ← Usado para construir /api/productos
+    // ...
+  }
+};
+```
+
+El componente hace:
+```typescript
+const api = createCrudApi(entity.plural);
+const response = await api.getAll();
+```
+
+---
+
+## TL;DR
+
+| Querés... | Hacé... |
+|-----------|---------|
+| Agregar endpoint custom | Crear función en `api.ts` |
+| Consumir entidad generada | `createCrudApi('nombre_plural')` |
+| Subir imagen | `imagenApi.upload(file, 'carpeta')` |
+| Login | `authApi.login(email, password)` |
+| Usuario actual | `authApi.me()` |
+| Master-detail | Crear endpoint custom en backend + frontend |
+
+---
+
+## Variables de Entorno Importantes
+
+```bash
+# Desarrollo
+VITE_API_URL=http://localhost:8000/api
+
+# Producción
+VITE_API_URL=https://tu-app.herokuapp.com/api
+VITE_CLOUDINARY_CLOUD_NAME=tu-cloud-name
 ```

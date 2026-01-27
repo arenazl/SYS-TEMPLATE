@@ -178,19 +178,18 @@ Antes de comenzar a codear:
 
 ## Archivos de la Guía
 
-| Archivo | Propósito |
-|---------|-----------|
-| `00_COMO_USAR.md` | Este documento - cómo usar la guía |
-| `01_ANALISIS.md` | Modelo de datos, endpoints, estructura |
-| `02_PANTALLAS.md` | Navegación, rutas, patrón ABM |
-| `03_STACK.md` | Tecnologías, dependencias, troubleshooting |
-| `04_UI.md` | Layout, componentes, temas, animaciones |
-| `05_CREDENCIALES.md` | Servicios externos, variables de entorno |
-| `06_DEPLOY.md` | Heroku, Netlify, producción |
-| `07_INFRAESTRUCTURA.md` | Arquitectura, servicios cloud |
-| `08_API_CLIENT.md` | Cliente API del frontend |
-| `09_ESTADO_ACTUAL.md` | Estado del proyecto, fixes recientes |
-| `10_PWA_INSTALACION.md` | Guía para instalar y compartir la app como PWA |
+| Archivo | Propósito | Prioridad |
+|---------|-----------|-----------|
+| `00_PROM.md` | Configuración de marca (título, eslogan) | **PRIMERO** |
+| `00_COMO_USAR.md` | Este documento - cómo usar la guía | Lectura |
+| `01_SETUP_INICIAL.md` | Seed de usuarios, quick login, permisos por rol | Setup |
+| `03_STACK.md` | Tecnologías, dependencias | Referencia |
+| `04_UI.md` | Layout, componentes, temas | Referencia |
+| `05_CREDENCIALES_DEPLOY.md` | Servicios externos, deploy Heroku/Netlify | Deploy |
+| `08_API_CLIENT.md` | Cliente API genérico (axios, interceptores, CRUD) | Referencia |
+| `13_GENERADOR.md` | Cómo usar el generador de ABMs | **OBLIGATORIO** |
+| `14_BRANDING_Y_TENANT.md` | Sistema multi-tenant y proceso de branding | **OBLIGATORIO** |
+| `99_ERRORES_COMUNES.md` | ⚠️ Errores comunes y soluciones | **OBLIGATORIO** |
 
 ---
 

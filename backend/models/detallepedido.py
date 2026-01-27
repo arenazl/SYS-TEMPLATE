@@ -13,7 +13,7 @@ class DetallePedidoBase(SQLModel):
     producto_id: int = Field(foreign_key="productos.id")
     cantidad: int
     precio_unitario: float
-    subtotal: float | None = None
+    subtotal: float
 
 
 # ============ Modelo de tabla ============

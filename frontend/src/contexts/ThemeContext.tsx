@@ -1,97 +1,58 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import {
-  themePresets,
-  ThemePreset,
-  ThemeColors,
-  ThemeVariant,
-  defaultThemeConfig,
-  getThemeColors,
-} from '../config/themePresets';
+import { themePresets, ThemePreset, ThemeColors, ThemeBackgrounds, defaultThemeConfig, defaultBackgrounds, getThemeColors } from '../config/themePresets';
 
-// Exportar tipos necesarios
-export type { ThemePreset, ThemeColors, ThemeVariant };
+export type { ThemePreset, ThemeColors, ThemeBackgrounds };
 export { themePresets };
 
-// Interfaz del tema activo (combina colors + metadata)
 export interface Theme extends ThemeColors {
+  id: string;
   name: string;
-  label: string;
 }
 
 interface ThemeContextType {
-  // Tema actual (colores + metadata)
   theme: Theme;
-
-  // Selección de preset y variante
-  currentPresetId: string;
-  currentVariant: ThemeVariant;
-  setPreset: (presetId: string, variant: ThemeVariant) => void;
-
-  // Imágenes de fondo
-  sidebarBgImage: string | null;
-  setSidebarBgImage: (url: string | null) => void;
-  sidebarBgOpacity: number;
-  setSidebarBgOpacity: (opacity: number) => void;
-  contentBgImage: string | null;
-  setContentBgImage: (url: string | null) => void;
-  contentBgOpacity: number;
-  setContentBgOpacity: (opacity: number) => void;
-
-  // Lista de presets disponibles
+  currentThemeId: string;
+  setTheme: (themeId: string) => void;
   presets: ThemePreset[];
+  backgrounds: ThemeBackgrounds;
+  updateGeneralBg: (url: string | undefined) => void;
+  updateSidebarBg: (url: string | undefined) => void;
+  updateTopbarBg: (url: string | undefined) => void;
+  updateGeneralOpacity: (opacity: number) => void;
+  updateSidebarOpacity: (opacity: number) => void;
+  updateTopbarOpacity: (opacity: number) => void;
+  updateGeneralBlur: (blur: number) => void;
+  updateSidebarBlur: (blur: number) => void;
+  updateTopbarBlur: (blur: number) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Estado del preset y variante seleccionados
-  const [currentPresetId, setCurrentPresetId] = useState<string>(() => {
-    const saved = localStorage.getItem('themePresetId');
+  const [currentThemeId, setCurrentThemeId] = useState<string>(() => {
+    const saved = localStorage.getItem('themeId');
     return saved || defaultThemeConfig.presetId;
   });
 
-  const [currentVariant, setCurrentVariant] = useState<ThemeVariant>(() => {
-    const saved = localStorage.getItem('themeVariant') as ThemeVariant;
-    return saved || defaultThemeConfig.variant;
+  const [backgrounds, setBackgrounds] = useState<ThemeBackgrounds>(() => {
+    const saved = localStorage.getItem('themeBackgrounds');
+    return saved ? JSON.parse(saved) : defaultBackgrounds;
   });
 
-  // Estados de imágenes de fondo
-  const [sidebarBgImage, setSidebarBgImageState] = useState<string | null>(() => {
-    const saved = localStorage.getItem('sidebarBgImage');
-    return saved && saved !== 'null' ? saved : null;
-  });
+  const themeColors = getThemeColors(currentThemeId);
+  const currentPreset = themePresets.find(p => p.id === currentThemeId);
 
-  const [sidebarBgOpacity, setSidebarBgOpacityState] = useState<number>(() => {
-    const saved = localStorage.getItem('sidebarBgOpacity');
-    return saved ? parseFloat(saved) : 0.3;
-  });
-
-  const [contentBgImage, setContentBgImageState] = useState<string | null>(() => {
-    const saved = localStorage.getItem('contentBgImage');
-    return saved && saved !== 'null' ? saved : null;
-  });
-
-  const [contentBgOpacity, setContentBgOpacityState] = useState<number>(() => {
-    const saved = localStorage.getItem('contentBgOpacity');
-    return saved ? parseFloat(saved) : 0.1;
-  });
-
-  // Obtener los colores del tema actual
-  const themeColors = getThemeColors(currentPresetId, currentVariant);
-  const currentPreset = themePresets.find(p => p.id === currentPresetId);
-
-  // Fallback a carbon/clasico si no se encuentra el preset
-  const fallbackColors = getThemeColors('carbon', 'clasico')!;
+  // Fallback a dark si no se encuentra
+  const fallbackColors = getThemeColors('dark')!;
   const activeColors = themeColors || fallbackColors;
 
-  // Construir el objeto tema completo
   const theme: Theme = {
     ...activeColors,
-    name: currentPresetId,
-    label: currentPreset?.name || 'Carbon',
+    id: currentThemeId,
+    name: currentPreset?.name || 'Oscuro',
   };
 
-  // Aplicar CSS variables cuando cambia el tema
+  // Aplicar CSS variables
   useEffect(() => {
     const root = document.documentElement;
     root.style.setProperty('--bg-primary', activeColors.background);
@@ -104,83 +65,77 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--bg-card', activeColors.card);
     root.style.setProperty('--bg-sidebar', activeColors.sidebar);
 
-    // Aplicar al body directamente
     document.body.style.backgroundColor = activeColors.background;
     document.body.style.color = activeColors.text;
-  }, [currentPresetId, currentVariant]);
+  }, [currentThemeId, activeColors]);
 
-  // Guardar preset en localStorage
+  // Guardar themeId en localStorage
   useEffect(() => {
-    localStorage.setItem('themePresetId', currentPresetId);
-  }, [currentPresetId]);
+    localStorage.setItem('themeId', currentThemeId);
+  }, [currentThemeId]);
 
+  // Guardar backgrounds en localStorage
   useEffect(() => {
-    localStorage.setItem('themeVariant', currentVariant);
-  }, [currentVariant]);
+    localStorage.setItem('themeBackgrounds', JSON.stringify(backgrounds));
+  }, [backgrounds]);
 
-  // Guardar imágenes de fondo en localStorage
-  useEffect(() => {
-    if (sidebarBgImage) {
-      localStorage.setItem('sidebarBgImage', sidebarBgImage);
-    } else {
-      localStorage.removeItem('sidebarBgImage');
-    }
-  }, [sidebarBgImage]);
-
-  useEffect(() => {
-    localStorage.setItem('sidebarBgOpacity', String(sidebarBgOpacity));
-  }, [sidebarBgOpacity]);
-
-  useEffect(() => {
-    if (contentBgImage) {
-      localStorage.setItem('contentBgImage', contentBgImage);
-    } else {
-      localStorage.removeItem('contentBgImage');
-    }
-  }, [contentBgImage]);
-
-  useEffect(() => {
-    localStorage.setItem('contentBgOpacity', String(contentBgOpacity));
-  }, [contentBgOpacity]);
-
-  // Función para cambiar preset y variante
-  const setPreset = (presetId: string, variant: ThemeVariant) => {
-    setCurrentPresetId(presetId);
-    setCurrentVariant(variant);
+  const setTheme = (themeId: string) => {
+    setCurrentThemeId(themeId);
   };
 
-  const setSidebarBgImage = (url: string | null) => {
-    setSidebarBgImageState(url);
+  const updateGeneralBg = (url: string | undefined) => {
+    setBackgrounds(prev => ({ ...prev, generalBg: url }));
   };
 
-  const setSidebarBgOpacity = (opacity: number) => {
-    setSidebarBgOpacityState(opacity);
+  const updateSidebarBg = (url: string | undefined) => {
+    setBackgrounds(prev => ({ ...prev, sidebarBg: url }));
   };
 
-  const setContentBgImage = (url: string | null) => {
-    setContentBgImageState(url);
+  const updateTopbarBg = (url: string | undefined) => {
+    setBackgrounds(prev => ({ ...prev, topbarBg: url }));
   };
 
-  const setContentBgOpacity = (opacity: number) => {
-    setContentBgOpacityState(opacity);
+  const updateGeneralOpacity = (opacity: number) => {
+    setBackgrounds(prev => ({ ...prev, generalBgOpacity: opacity }));
+  };
+
+  const updateSidebarOpacity = (opacity: number) => {
+    setBackgrounds(prev => ({ ...prev, sidebarBgOpacity: opacity }));
+  };
+
+  const updateTopbarOpacity = (opacity: number) => {
+    setBackgrounds(prev => ({ ...prev, topbarBgOpacity: opacity }));
+  };
+
+  const updateGeneralBlur = (blur: number) => {
+    setBackgrounds(prev => ({ ...prev, generalBgBlur: blur }));
+  };
+
+  const updateSidebarBlur = (blur: number) => {
+    setBackgrounds(prev => ({ ...prev, sidebarBgBlur: blur }));
+  };
+
+  const updateTopbarBlur = (blur: number) => {
+    setBackgrounds(prev => ({ ...prev, topbarBgBlur: blur }));
   };
 
   return (
     <ThemeContext.Provider
       value={{
         theme,
-        currentPresetId,
-        currentVariant,
-        setPreset,
-        sidebarBgImage,
-        setSidebarBgImage,
-        sidebarBgOpacity,
-        setSidebarBgOpacity,
-        contentBgImage,
-        setContentBgImage,
-        contentBgOpacity,
-        setContentBgOpacity,
+        currentThemeId,
+        setTheme,
         presets: themePresets,
+        backgrounds,
+        updateGeneralBg,
+        updateSidebarBg,
+        updateTopbarBg,
+        updateGeneralOpacity,
+        updateSidebarOpacity,
+        updateTopbarOpacity,
+        updateGeneralBlur,
+        updateSidebarBlur,
+        updateTopbarBlur,
       }}
     >
       {children}

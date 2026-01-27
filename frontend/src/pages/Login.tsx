@@ -1,17 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useOrganization, type OrgConfig } from '../contexts/OrganizationContext';
 import { Mail, Lock, Loader2, LogIn } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import api from '../lib/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [config, setConfig] = useState<OrgConfig | null>(null);
   const { login } = useAuth();
+  const { setOrg } = useOrganization();
   const { theme } = useTheme();
   const navigate = useNavigate();
+
+  // Cargar configuración pública de la organización
+  useEffect(() => {
+    api.get('/auth/config')
+      .then(res => {
+        const orgConfig = res.data as OrgConfig;
+        setConfig(orgConfig);
+        setOrg(orgConfig); // Guardar en context y localStorage
+      })
+      .catch(() => {
+        const defaultConfig: OrgConfig = {
+          nombre: 'Sistema',
+          icono: '🏢',
+          titulo: 'Sistema de Gestión',
+          eslogan: 'Ingresá con tus credenciales',
+          descripcion: null,
+          logo_url: null,
+          color_primario: null,
+          color_secundario: null
+        };
+        setConfig(defaultConfig);
+        setOrg(defaultConfig);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Solo ejecutar una vez al montar
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +58,11 @@ export default function Login() {
     }
   };
 
-  // Demo users (deben coincidir con seed.py)
+  // Demo users - deben coincidir con cli/seed.ts
   const demoUsers = [
-    { email: 'admin@admin.com', password: 'admin123', label: 'Admin', color: 'from-red-500 to-rose-600' },
-    { email: 'usuario@demo.com', password: '123456', label: 'Usuario', color: 'from-blue-500 to-indigo-600' },
+    { email: 'admin@clinica.com', password: 'admin123', label: 'Admin', color: 'from-red-500 to-rose-600' },
+    { email: 'medico@clinica.com', password: 'medico123', label: 'Médico', color: 'from-emerald-500 to-teal-600' },
+    { email: 'recepcion@clinica.com', password: 'recep123', label: 'Recepción', color: 'from-blue-500 to-indigo-600' },
   ];
 
   const quickLogin = async (userEmail: string, userPassword: string) => {
@@ -66,17 +96,21 @@ export default function Login() {
       >
         {/* Logo */}
         <div className="text-center mb-8">
-          <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: `${theme.primary}20` }}
-          >
-            <LogIn className="h-8 w-8" style={{ color: theme.primary }} />
-          </div>
+          {config?.logo_url ? (
+            <img src={config.logo_url} alt="Logo" className="w-16 h-16 mx-auto mb-4 rounded-2xl object-contain" />
+          ) : (
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ backgroundColor: `${theme.primary}20` }}
+            >
+              <LogIn className="h-8 w-8" style={{ color: theme.primary }} />
+            </div>
+          )}
           <h1 className="text-2xl font-bold" style={{ color: theme.text }}>
-            Sistema de Gestión
+            {config?.titulo || 'Sistema de Gestión'}
           </h1>
           <p className="text-sm mt-1" style={{ color: theme.textSecondary }}>
-            Ingresá con tus credenciales
+            {config?.eslogan || 'Ingresá con tus credenciales'}
           </p>
         </div>
 
@@ -165,7 +199,7 @@ export default function Login() {
             <div className="flex-1 h-px" style={{ backgroundColor: theme.border }} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             {demoUsers.map((user) => (
               <button
                 key={user.email}

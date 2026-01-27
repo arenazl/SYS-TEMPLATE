@@ -8,9 +8,41 @@ from core.database import get_db
 from core.security import verify_password, get_password_hash, create_access_token, get_current_user
 from core.config import settings
 from models.usuario import Usuario
+from models.organizacion import Organizacion
 from schemas.auth import UserCreate, UserResponse, Token
 
 router = APIRouter()
+
+
+@router.get("/config")
+async def get_public_config(db: AsyncSession = Depends(get_db)):
+    """Obtener configuración pública de la organización (para login)"""
+    # Obtener la primera organización activa
+    result = await db.execute(
+        select(Organizacion).where(Organizacion.activo == True).limit(1)
+    )
+    org = result.scalar_one_or_none()
+
+    if not org:
+        return {
+            "nombre": "Sistema",
+            "titulo": "Sistema de Gestión",
+            "eslogan": "Ingresá con tus credenciales",
+            "descripcion": None,
+            "logo_url": None,
+            "color_primario": None,
+            "color_secundario": None
+        }
+
+    return {
+        "nombre": org.nombre or "Sistema",
+        "titulo": org.titulo or org.nombre or "Sistema de Gestión",
+        "eslogan": org.eslogan or "Ingresá con tus credenciales",
+        "descripcion": org.descripcion,
+        "logo_url": org.logo_url,
+        "color_primario": org.color_primario,
+        "color_secundario": org.color_secundario
+    }
 
 
 @router.post("/register", response_model=UserResponse)

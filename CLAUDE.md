@@ -119,14 +119,18 @@ Se genera automáticamente:
 
 ## Instrucciones para Claude
 
-### REGLA PRINCIPAL
-ANTES de realizar cualquier tarea, SIEMPRE leer `APP_GUIDE/13_GENERADOR.md` para entender cómo funciona el generador.
+### 🚨 REGLA PRINCIPAL - LECTURA OBLIGATORIA
+ANTES de realizar cualquier tarea, SIEMPRE leer en este orden:
+1. **`APP_GUIDE/99_ERRORES_COMUNES.md`** ⚠️ (LECTURA OBLIGATORIA - contiene errores ya resueltos)
+2. **`APP_GUIDE/13_GENERADOR.md`** (Cómo usar el generador)
 
 ### Comportamiento esperado
 1. Leer la guía relevante ANTES de actuar
 2. NO preguntar información que ya está en las guías
 3. Usar el generador para crear nuevas entidades (no crear manualmente)
 4. Mantener las guías actualizadas cuando haya cambios
+5. **NUNCA** cometer errores ya documentados en `99_ERRORES_COMUNES.md`
+6. **SIEMPRE** verificar modelos generados antes de escribir código custom
 
 ### Comandos principales
 
@@ -165,13 +169,14 @@ cd frontend && npm run build && netlify deploy --prod --dir=dist
 
 ## Documentación
 
-| Guía | Contenido |
-|------|-----------|
-| `13_GENERADOR.md` | Cómo usar el generador de ABMs |
-| `03_STACK.md` | Stack tecnológico y configuración |
-| `04_UI.md` | Sistema de diseño y componentes |
-| `05_CREDENCIALES_DEPLOY.md` | Deploy en Heroku/Netlify/Aiven |
-| `08_API_CLIENT.md` | Cliente API del frontend |
+| Guía | Contenido | Prioridad |
+|------|-----------|-----------|
+| `99_ERRORES_COMUNES.md` | ⚠️ Errores comunes y soluciones | **OBLIGATORIO** |
+| `13_GENERADOR.md` | Cómo usar el generador de ABMs | **OBLIGATORIO** |
+| `03_STACK.md` | Stack tecnológico y configuración | Referencia |
+| `04_UI.md` | Sistema de diseño y componentes | Referencia |
+| `05_CREDENCIALES_DEPLOY.md` | Deploy en Heroku/Netlify/Aiven | Referencia |
+| `08_API_CLIENT.md` | Cliente API del frontend | Referencia |
 
 ---
 

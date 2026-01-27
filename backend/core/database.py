@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
+from sqlmodel import SQLModel
 from .config import settings
 
 # Configuración del engine según el tipo de BD
@@ -23,7 +23,8 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False
 )
 
-Base = declarative_base()
+# SQLModel usa su propia metadata
+Base = SQLModel
 
 async def get_db():
     async with AsyncSessionLocal() as session:

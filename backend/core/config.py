@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # Pexels API (imagenes gratuitas)
     PEXELS_API_KEY: str = ""
 
+    # Anthropic API (Claude) - Para Panel BI con IA
+    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_MODEL: str = "claude-3-5-sonnet-20241022"
+
     # WhatsApp Business API (Meta Cloud API)
     WHATSAPP_PHONE_NUMBER_ID: str = ""
     WHATSAPP_ACCESS_TOKEN: str = ""

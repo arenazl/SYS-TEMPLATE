@@ -9,15 +9,16 @@ if TYPE_CHECKING:
 
 # ============ Base (campos compartidos) ============
 class ProveedorBase(SQLModel):
-    codigo: str | None = None
-    nombre: str
-    razon_social: str | None = None
+    razon_social: str
     cuit: str | None = None
+    rubro: str | None = None
     contacto: str | None = None
-    telefono: str | None = None
     email: EmailStr | None = None
+    telefono: str | None = None
     direccion: str | None = None
-    notas: str | None = None
+    activo: bool | None = None
+    calificacion: int | None = None
+    observaciones: str | None = None
 
 
 # ============ Modelo de tabla ============
@@ -38,15 +39,16 @@ class ProveedorCreate(ProveedorBase):
 
 class ProveedorUpdate(SQLModel):
     """Para actualizar - todos opcionales"""
-    codigo: str | None = None
-    nombre: str | None = None
     razon_social: str | None = None
     cuit: str | None = None
+    rubro: str | None = None
     contacto: str | None = None
-    telefono: str | None = None
     email: EmailStr | None = None
+    telefono: str | None = None
     direccion: str | None = None
-    notas: str | None = None
+    activo: bool | None = None
+    calificacion: int | None = None
+    observaciones: str | None = None
 
 
 class ProveedorResponse(ProveedorBase):

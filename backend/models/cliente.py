@@ -9,12 +9,12 @@ if TYPE_CHECKING:
 
 # ============ Base (campos compartidos) ============
 class ClienteBase(SQLModel):
-    codigo: str | None = None
     nombre: str
     email: EmailStr | None = None
     telefono: str | None = None
     direccion: str | None = None
-    tipo: str | None = None
+    latitud: float | None = None
+    longitud: float | None = None
 
 
 # ============ Modelo de tabla ============
@@ -35,12 +35,12 @@ class ClienteCreate(ClienteBase):
 
 class ClienteUpdate(SQLModel):
     """Para actualizar - todos opcionales"""
-    codigo: str | None = None
     nombre: str | None = None
     email: EmailStr | None = None
     telefono: str | None = None
     direccion: str | None = None
-    tipo: str | None = None
+    latitud: float | None = None
+    longitud: float | None = None
 
 
 class ClienteResponse(ClienteBase):

@@ -40,9 +40,16 @@ function getIcon(iconName: string): React.ComponentType<{ className?: string; st
   return icons[iconName] || icons['FileText'];
 }
 
-export default function DynamicABM() {
-  const { entidad } = useParams<{ entidad: string }>();
+interface DynamicABMProps {
+  entityOverride?: string; // Permite pasar la entidad manualmente
+}
+
+export default function DynamicABM({ entityOverride }: DynamicABMProps = {}) {
+  const { entidad: urlEntidad } = useParams<{ entidad: string }>();
   const { theme } = useTheme();
+
+  // Usar entidad del override o de la URL
+  const entidad = entityOverride || urlEntidad;
 
   // Obtener configuración de la entidad
   const entityConfig = useMemo(() => {
@@ -172,6 +179,20 @@ export default function DynamicABM() {
   const handleSubmit = async () => {
     if (!entityConfig) return;
 
+    // Validar campos requeridos
+    const missingFields = entityConfig.fields
+      .filter(f => f.required && !['organizacion_id', 'password_hash'].includes(f.name))
+      .filter(f => {
+        const value = formData[f.name];
+        return value === undefined || value === null || value === '';
+      })
+      .map(f => formatLabel(f.name));
+
+    if (missingFields.length > 0) {
+      toast.error(`Campos requeridos: ${missingFields.join(', ')}`);
+      return;
+    }
+
     // Validar detalles si es master-detail
     if (entityConfig.masterDetail && detalles.length === 0) {
       toast.error('Agregue al menos un item');
@@ -214,8 +235,16 @@ export default function DynamicABM() {
       setDetalles([]);
       setEditing(null);
       fetchData();
-    } catch {
-      toast.error('Error al guardar');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string | { msg: string }[] } } };
+      const detail = error.response?.data?.detail;
+      if (typeof detail === 'string') {
+        toast.error(detail);
+      } else if (Array.isArray(detail)) {
+        toast.error(detail.map(d => d.msg).join(', '));
+      } else {
+        toast.error('Error al guardar');
+      }
     } finally {
       setSaving(false);
     }
