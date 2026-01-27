@@ -209,7 +209,7 @@ export default function BIPanelWithChat() {
             disabled={loading}
           />
           <button
-            onClick={ejecutarConsulta}
+            onClick={() => ejecutarConsulta()}
             disabled={!input.trim() || loading}
             className="px-6 py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 flex-shrink-0"
             style={{

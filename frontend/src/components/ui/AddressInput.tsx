@@ -54,7 +54,7 @@ export function AddressInput({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
-  const searchTimeoutRef = useRef<number>();
+  const searchTimeoutRef = useRef<number | undefined>(undefined);
 
   // Coordenadas por defecto (Buenos Aires)
   const defaultLat = latitud || -34.6037;

@@ -89,7 +89,7 @@ export default function ReservasCalendar() {
     startDate: new Date(reserva.fecha_entrada),
     endDate: new Date(reserva.fecha_salida),
     color: getEstadoColor(reserva.estado),
-    data: reserva,
+    data: reserva as unknown as Record<string, unknown>,
   }));
 
   const handleEventClick = (event: any) => {
@@ -129,6 +129,37 @@ export default function ReservasCalendar() {
     );
   }
 
+  // Componente toggle de vista reutilizable
+  const ViewToggle = () => (
+    <div
+      className="flex rounded-lg p-1"
+      style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
+    >
+      <button
+        onClick={() => setView('calendar')}
+        className="px-4 py-2 rounded flex items-center gap-2 transition-colors"
+        style={{
+          backgroundColor: view === 'calendar' ? theme.primary : 'transparent',
+          color: view === 'calendar' ? 'white' : theme.textSecondary,
+        }}
+      >
+        <Calendar className="h-4 w-4" />
+        Calendario
+      </button>
+      <button
+        onClick={() => setView('list')}
+        className="px-4 py-2 rounded flex items-center gap-2 transition-colors"
+        style={{
+          backgroundColor: view === 'list' ? theme.primary : 'transparent',
+          color: view === 'list' ? 'white' : theme.textSecondary,
+        }}
+      >
+        <List className="h-4 w-4" />
+        Lista
+      </button>
+    </div>
+  );
+
   // Si está en vista de lista, usar el DynamicABM
   if (view === 'list') {
     return (
@@ -138,33 +169,7 @@ export default function ReservasCalendar() {
           <h1 className="text-2xl font-bold" style={{ color: theme.text }}>
             Reservas
           </h1>
-          <div
-            className="flex rounded-lg p-1"
-            style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
-          >
-            <button
-              onClick={() => setView('calendar')}
-              className="px-4 py-2 rounded flex items-center gap-2 transition-colors"
-              style={{
-                backgroundColor: view === 'calendar' ? theme.primary : 'transparent',
-                color: view === 'calendar' ? 'white' : theme.textSecondary,
-              }}
-            >
-              <Calendar className="h-4 w-4" />
-              Calendario
-            </button>
-            <button
-              onClick={() => setView('list')}
-              className="px-4 py-2 rounded flex items-center gap-2 transition-colors"
-              style={{
-                backgroundColor: view === 'list' ? theme.primary : 'transparent',
-                color: view === 'list' ? 'white' : theme.textSecondary,
-              }}
-            >
-              <List className="h-4 w-4" />
-              Lista
-            </button>
-          </div>
+          <ViewToggle />
         </div>
 
         {/* DynamicABM */}
@@ -184,33 +189,7 @@ export default function ReservasCalendar() {
 
         <div className="flex items-center gap-3">
           {/* Toggle de vista */}
-          <div
-            className="flex rounded-lg p-1"
-            style={{ backgroundColor: theme.card, border: `1px solid ${theme.border}` }}
-          >
-            <button
-              onClick={() => setView('calendar')}
-              className="px-4 py-2 rounded flex items-center gap-2 transition-colors"
-              style={{
-                backgroundColor: view === 'calendar' ? theme.primary : 'transparent',
-                color: view === 'calendar' ? 'white' : theme.textSecondary,
-              }}
-            >
-              <Calendar className="h-4 w-4" />
-              Calendario
-            </button>
-            <button
-              onClick={() => setView('list')}
-              className="px-4 py-2 rounded flex items-center gap-2 transition-colors"
-              style={{
-                backgroundColor: view === 'list' ? theme.primary : 'transparent',
-                color: view === 'list' ? 'white' : theme.textSecondary,
-              }}
-            >
-              <List className="h-4 w-4" />
-              Lista
-            </button>
-          </div>
+          <ViewToggle />
 
           {/* Botón nueva reserva */}
           <button

@@ -159,13 +159,26 @@ export default function Sidebar() {
     );
   };
 
-  // Construir estructura de menú
-  const buildMenuStructure = () => {
-    if (!menusLoaded) return defaultCategories;
+  // Tipo para items del menú
+  type MenuItemData = { name: string; path: string; icon: React.ComponentType<{ className?: string }> };
+  type MenuCategory = { name: string; icon: React.ComponentType<{ className?: string }>; items: MenuItemData[] };
 
+  // Genera los items de una categoría (para menú por defecto)
+  const getCategoryItems = (plurals: string[]): MenuItemData[] => {
+    return Object.values(entities)
+      .filter(e => !e.isDetail && plurals.includes(e.plural))
+      .sort((a, b) => a.order - b.order)
+      .map(e => ({
+        name: e.name,
+        path: `/gestion/${e.plural}`,
+        icon: getIcon(e.icon),
+      }));
+  };
+
+  // Construir estructura de menú
+  const buildMenuStructure = (): MenuCategory[] => {
     // Si hay menús personalizados, construir estructura desde BD
-    if (customMenus.length > 0) {
-      // Agrupar por parent_id (null = categorías)
+    if (menusLoaded && customMenus.length > 0) {
       const categories = customMenus
         .filter(m => m.parent_id === null)
         .sort((a, b) => (a.orden || 0) - (b.orden || 0));
@@ -173,7 +186,6 @@ export default function Sidebar() {
       return categories.map(cat => ({
         name: cat.nombre,
         icon: cat.icono ? getIcon(cat.icono) : Home,
-        id: cat.id,
         items: customMenus
           .filter(m => m.parent_id === cat.id && m.activo)
           .sort((a, b) => (a.orden || 0) - (b.orden || 0))
@@ -185,23 +197,12 @@ export default function Sidebar() {
       }));
     }
 
-    // Fallback: usar categorías predefinidas
+    // Fallback: usar categorías predefinidas transformadas
     return defaultCategories.map(cat => ({
-      ...cat,
+      name: cat.name,
+      icon: cat.icon,
       items: getCategoryItems(cat.plurals)
     }));
-  };
-
-  // Genera los items de una categoría (para menú por defecto)
-  const getCategoryItems = (plurals: string[]) => {
-    return Object.values(entities)
-      .filter(e => !e.isDetail && plurals.includes(e.plural))
-      .sort((a, b) => a.order - b.order)
-      .map(e => ({
-        name: e.name,
-        path: `/gestion/${e.plural}`,
-        icon: getIcon(e.icon),
-      }));
   };
 
   const menuStructure = buildMenuStructure();
@@ -261,10 +262,10 @@ export default function Sidebar() {
           {menuStructure.map((category) => {
             const CategoryIcon = category.icon;
             const isOpen = openCategories[category.name];
-            const categoryItems = category.items || [];
+            const categoryItems = category.items;
 
             // Verificar si algún item de esta categoría está activo
-            const hasActiveItem = categoryItems.some(item => isActive(item.path));
+            const hasActiveItem = categoryItems.some((item: MenuItemData) => isActive(item.path));
 
             return (
               <div key={category.name} className="mb-1">
