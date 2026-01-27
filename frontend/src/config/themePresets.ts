@@ -432,7 +432,7 @@ export function getPresetOptions() {
 
 // Configuración por defecto
 export const defaultThemeConfig = {
-  presetId: 'dark',
+  presetId: 'mindful',
   variant: 'default' as ThemeVariant,
 };
 
