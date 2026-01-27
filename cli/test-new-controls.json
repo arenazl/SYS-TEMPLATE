@@ -1,0 +1,37 @@
+{
+  "module": {
+    "name": "Test New Controls",
+    "description": "Test entities for new control types validation",
+    "icon": "TestTube",
+    "path": "test",
+    "folder": "test",
+    "requiredRole": "admin",
+    "containerStyle": "tabs"
+  },
+  "entities": [
+    {
+      "name": "Article",
+      "plural": "articles",
+      "table": "articles",
+      "fields": "title:string:req slug:string:req published_date:datepicker:req content:richtext:req featured_image:file tags:tags status:radio(draft,published,archived):req views:integer featured:bool",
+      "icon": "FileText",
+      "order": 1
+    },
+    {
+      "name": "Event",
+      "plural": "events",
+      "table": "events",
+      "fields": "name:string:req description:richtext event_date:datepicker:req start_time:datetime location:string capacity:integer image:file event_type:enum(conference,workshop,webinar,meeting) status:radio(scheduled,ongoing,completed,cancelled):req",
+      "icon": "Calendar",
+      "order": 2
+    },
+    {
+      "name": "Document",
+      "plural": "documents",
+      "table": "documents",
+      "fields": "title:string:req file_url:file notes:richtext created_date:datepicker keywords:tags document_type:enum(pdf,word,excel,image) access_level:radio(public,private,restricted):req",
+      "icon": "FileCode",
+      "order": 3
+    }
+  ]
+}

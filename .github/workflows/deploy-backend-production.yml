@@ -1,0 +1,46 @@
+name: Deploy Backend to Heroku Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for production deployment'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy to Heroku Production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://${{ secrets.HEROKU_PROD_APP_NAME }}.herokuapp.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log deployment reason
+        run: |
+          echo "Deploying to production"
+          echo "Reason: ${{ github.event.inputs.reason }}"
+          echo "Triggered by: ${{ github.actor }}"
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_PROD_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "."
+          buildpack: "heroku/python"
+
+      - name: Verify deployment
+        run: |
+          echo "Backend deployed to Heroku production successfully"
+          echo "App URL: https://${{ secrets.HEROKU_PROD_APP_NAME }}.herokuapp.com"
+
+      - name: Health check
+        run: |
+          sleep 10
+          curl --fail --retry 3 --retry-delay 5 https://${{ secrets.HEROKU_PROD_APP_NAME }}.herokuapp.com/health || echo "Health check failed - please verify manually"

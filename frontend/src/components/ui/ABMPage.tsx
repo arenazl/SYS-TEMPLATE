@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Sheet } from './Sheet';
 import { ConfirmModal } from './ConfirmModal';
+import { RadioGroup } from './RadioGroup';
+import type { RadioOption } from './RadioGroup';
 
 type ViewMode = 'cards' | 'table';
 
@@ -1604,3 +1606,7 @@ if (typeof document !== 'undefined' && !document.getElementById(styleId)) {
   `;
   document.head.appendChild(style);
 }
+
+// Re-export RadioGroup and RadioOption for convenience
+export { RadioGroup };
+export type { RadioOption } from './RadioGroup';

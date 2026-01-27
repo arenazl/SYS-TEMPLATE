@@ -8,15 +8,23 @@
  * - int/integer → ABMInput type="number"
  * - decimal/float → ABMInput type="number" step="0.01"
  * - bool → checkbox
- * - date → ABMInput type="date"
+ * - date → ABMInput type="date" / DatePicker (with datepicker controlType)
  * - datetime → ABMInput type="datetime-local"
  * - enum → ABMSelect con opciones
  * - fk → ABMSelect con datos cargados
+ * - richtext → RichTextEditor (with richtext controlType)
+ * - file → FileUpload (with file controlType)
+ * - tags → TagsInput (with tags controlType)
+ * - radio → RadioGroup (with radio controlType)
  */
 
 import { FieldConfig } from '../../config/entityRegistry';
-import { ABMInput, ABMTextarea, ABMSelect } from '../ui/ABMPage';
+import { ABMInput, ABMTextarea, ABMSelect, RadioGroup } from '../ui/ABMPage';
 import { AddressInput } from '../ui/AddressInput';
+import { DatePicker } from '../ui/DatePicker';
+import { RichTextEditor } from '../ui/RichTextEditor';
+import { FileUpload } from '../ui/FileUpload';
+import { TagsInput } from '../ui/TagsInput';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface DynamicFormProps {
@@ -157,6 +165,18 @@ function renderField(
       );
 
     case 'date':
+      // Check if using DatePicker control
+      if (field.controlType === 'datepicker') {
+        return (
+          <DatePicker
+            label={label}
+            value={String(value || '')}
+            onChange={(val) => onChange(field.name, val)}
+            required={field.required}
+          />
+        );
+      }
+      // Default to native date input
       return (
         <ABMInput
           label={label}
@@ -221,6 +241,53 @@ function renderField(
             }
           }}
           rows={4}
+        />
+      );
+
+    case 'richtext':
+      return (
+        <RichTextEditor
+          label={label}
+          value={String(value || '')}
+          onChange={(val) => onChange(field.name, val)}
+          required={field.required}
+          placeholder="Ingrese texto enriquecido..."
+        />
+      );
+
+    case 'file':
+      return (
+        <FileUpload
+          label={label}
+          onChange={(file) => onChange(field.name, file)}
+          required={field.required}
+          accept="*/*"
+        />
+      );
+
+    case 'tags':
+      return (
+        <TagsInput
+          label={label}
+          value={Array.isArray(value) ? value.join(', ') : String(value || '')}
+          onChange={(tags) => onChange(field.name, tags)}
+          required={field.required}
+          placeholder="Ingrese etiquetas separadas por comas..."
+        />
+      );
+
+    case 'radio':
+      if (!field.enumValues?.length) return null;
+      return (
+        <RadioGroup
+          label={label}
+          value={String(value || '')}
+          onChange={(val) => onChange(field.name, val)}
+          options={field.enumValues.map(v => ({
+            value: v,
+            label: v.charAt(0).toUpperCase() + v.slice(1)
+          }))}
+          orientation="vertical"
         />
       );
 

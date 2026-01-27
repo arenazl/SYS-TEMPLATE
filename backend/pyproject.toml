@@ -1,0 +1,42 @@
+[tool.ruff]
+# Set the line length to 100 characters
+line-length = 100
+
+# Exclude common directories
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "alembic/versions",
+    "htmlcov",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+# Enable pycodestyle (E) and Pyflakes (F) rules
+select = ["E", "F"]
+
+# Ignore specific rules that are too strict for existing codebase
+ignore = [
+    "E402",  # Module level import not at top of file (needed for alembic, tests)
+    "E501",  # Line too long (we'll handle this gradually)
+    "E712",  # Comparison to True/False (common pattern in tests)
+    "F401",  # Imported but unused (common in __init__.py and generated code)
+    "F541",  # f-string without any placeholders (minor issue)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Allow unused imports in __init__.py files
+"__init__.py" = ["F401"]
+# Allow unused imports and variables in test files
+"tests/**/*.py" = ["F401", "F811"]
+# Allow special configurations in alembic env.py
+"alembic/env.py" = ["E402"]
+# Allow special configurations in conftest.py
+"tests/conftest.py" = ["E402"]
+
+[tool.ruff.format]
+# Use double quotes for strings
+quote-style = "double"
+# Indent with 4 spaces
+indent-style = "space"

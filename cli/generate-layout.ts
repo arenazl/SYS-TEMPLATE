@@ -8,6 +8,12 @@
  * - SettingsPage (contenedor con tabs para configuración)
  * - Rutas
  *
+ * Soporta todas las entidades con cualquier tipo de campo incluyendo:
+ * - FK (ComboBox), Enum/Radio (Select/RadioGroup)
+ * - DatePicker (date input), RichText (WYSIWYG)
+ * - File (upload), Tags (chips input)
+ * - Master-Detail (inline forms)
+ *
  * Uso: npx tsx generate-layout.ts negocio.json auditoria.json
  */
 
