@@ -4,6 +4,11 @@ import { toast } from 'sonner';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { ABMPage, ABMCard, ABMCardActions, ABMTable, ABMTableAction, ABMInput, ABMTextarea, ABMSelect, ABMSheetFooter, ABMBadge } from '../../components/ui/ABMPage';
+import { DatePicker } from '../../components/ui/DatePicker';
+import { RichTextEditor } from '../../components/ui/RichTextEditor';
+import { FileUpload } from '../../components/ui/FileUpload';
+import { TagsInput } from '../../components/ui/TagsInput';
+import { RadioGroup } from '../../components/ui/RadioGroup';
 
 
 
@@ -115,13 +120,13 @@ export default function ArticleABM() {
         <div className="space-y-4">
             <ABMInput label="Title" type="text"  value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
             <ABMInput label="Slug" type="text"  value={formData.slug || ""} onChange={(e) => setFormData({...formData, slug: e.target.value})} required />
-            <ABMInput label="Published Date" type="text"  value={formData.published_date || ""} onChange={(e) => setFormData({...formData, published_date: e.target.value})} required />
-            <ABMInput label="Content" type="text"  value={formData.content || ""} onChange={(e) => setFormData({...formData, content: e.target.value})} required />
-            <ABMInput label="Featured Image" type="text"  value={formData.featured_image || ""} onChange={(e) => setFormData({...formData, featured_image: e.target.value})}  />
-            <ABMInput label="Tags" type="text"  value={formData.tags || ""} onChange={(e) => setFormData({...formData, tags: e.target.value})}  />
-            <ABMInput label="Status" type="text"  value={formData.status || ""} onChange={(e) => setFormData({...formData, status: e.target.value})} required />
+            <DatePicker label="Published Date" value={formData.published_date || ""} onChange={(value) => setFormData({...formData, published_date: value})} required />
+            <RichTextEditor label="Content" value={formData.content || ""} onChange={(value) => setFormData({...formData, content: value})} required />
+            <FileUpload label="Featured Image" value={formData.featured_image || ""} onChange={(file) => setFormData({...formData, featured_image: file ? file.name : ""})}  />
+            <TagsInput label="Tags" value={formData.tags || []} onChange={(tags) => setFormData({...formData, tags})}  />
+            <RadioGroup label="Status" value={formData.status || ""} onChange={(value) => setFormData({...formData, status: value})} options={[{label: 'Published', value: 'published'}, {label: 'Draft', value: 'draft'}, {label: 'Archived', value: 'archived'}]} />
             <ABMInput label="Views" type="number"  value={formData.views ?? ""} onChange={(e) => setFormData({...formData, views: e.target.value ? Number(e.target.value) : undefined})}  />
-            <ABMInput label="Featured" type="text"  value={formData.featured || ""} onChange={(e) => setFormData({...formData, featured: e.target.value})}  />
+            <RadioGroup label="Featured" value={formData.featured ? "true" : "false"} onChange={(val) => setFormData({...formData, featured: val === "true"})} options={[{label: 'Yes', value: 'true'}, {label: 'No', value: 'false'}]}  />
         </div>
       }
       sheetFooter={<ABMSheetFooter onCancel={() => setSheetOpen(false)} onSave={handleSubmit} saving={saving} />}

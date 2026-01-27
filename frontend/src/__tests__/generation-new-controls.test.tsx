@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import ArticleABM from '../pages/test/ArticleABM';
+import EventABM from '../pages/test/EventABM';
+import DocumentABM from '../pages/test/DocumentABM';
 
 /**
  * Tests for Generated Screens with New Control Types
@@ -25,32 +28,26 @@ describe('Generated Screens with New Control Types', () => {
       // - status: radio (new)
       // - views: integer (standard)
       // - featured: boolean (standard)
-      const ArticleABM = require('../pages/test/ArticleABM').default;
       expect(ArticleABM).toBeDefined();
     });
 
     it('should render DatePicker field for published_date', () => {
-      const ArticleABM = require('../pages/test/ArticleABM').default;
       expect(ArticleABM).toBeDefined();
     });
 
     it('should render RichTextEditor for content field', () => {
-      const ArticleABM = require('../pages/test/ArticleABM').default;
       expect(ArticleABM).toBeDefined();
     });
 
     it('should render FileUpload for featured_image', () => {
-      const ArticleABM = require('../pages/test/ArticleABM').default;
       expect(ArticleABM).toBeDefined();
     });
 
     it('should render TagsInput for tags field', () => {
-      const ArticleABM = require('../pages/test/ArticleABM').default;
       expect(ArticleABM).toBeDefined();
     });
 
     it('should render RadioGroup for status field', () => {
-      const ArticleABM = require('../pages/test/ArticleABM').default;
       expect(ArticleABM).toBeDefined();
     });
   });
@@ -67,32 +64,26 @@ describe('Generated Screens with New Control Types', () => {
       // - image: file (new)
       // - event_type: enum (standard)
       // - status: radio (new)
-      const EventABM = require('../pages/test/EventABM').default;
       expect(EventABM).toBeDefined();
     });
 
     it('should render DatePicker for event_date', () => {
-      const EventABM = require('../pages/test/EventABM').default;
       expect(EventABM).toBeDefined();
     });
 
     it('should render RichTextEditor for description', () => {
-      const EventABM = require('../pages/test/EventABM').default;
       expect(EventABM).toBeDefined();
     });
 
     it('should render FileUpload for image field', () => {
-      const EventABM = require('../pages/test/EventABM').default;
       expect(EventABM).toBeDefined();
     });
 
     it('should render Select for event_type enum', () => {
-      const EventABM = require('../pages/test/EventABM').default;
       expect(EventABM).toBeDefined();
     });
 
     it('should render RadioGroup for status field', () => {
-      const EventABM = require('../pages/test/EventABM').default;
       expect(EventABM).toBeDefined();
     });
   });
@@ -107,37 +98,30 @@ describe('Generated Screens with New Control Types', () => {
       // - keywords: tags (new)
       // - document_type: enum (standard)
       // - access_level: radio (new)
-      const DocumentABM = require('../pages/test/DocumentABM').default;
       expect(DocumentABM).toBeDefined();
     });
 
     it('should render FileUpload for file_url', () => {
-      const DocumentABM = require('../pages/test/DocumentABM').default;
       expect(DocumentABM).toBeDefined();
     });
 
     it('should render RichTextEditor for notes', () => {
-      const DocumentABM = require('../pages/test/DocumentABM').default;
       expect(DocumentABM).toBeDefined();
     });
 
     it('should render DatePicker for created_date', () => {
-      const DocumentABM = require('../pages/test/DocumentABM').default;
       expect(DocumentABM).toBeDefined();
     });
 
     it('should render TagsInput for keywords', () => {
-      const DocumentABM = require('../pages/test/DocumentABM').default;
       expect(DocumentABM).toBeDefined();
     });
 
     it('should render Select for document_type enum', () => {
-      const DocumentABM = require('../pages/test/DocumentABM').default;
       expect(DocumentABM).toBeDefined();
     });
 
     it('should render RadioGroup for access_level', () => {
-      const DocumentABM = require('../pages/test/DocumentABM').default;
       expect(DocumentABM).toBeDefined();
     });
   });

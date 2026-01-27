@@ -4,6 +4,11 @@ import { toast } from 'sonner';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { ABMPage, ABMCard, ABMCardActions, ABMTable, ABMTableAction, ABMInput, ABMTextarea, ABMSelect, ABMSheetFooter, ABMBadge } from '../../components/ui/ABMPage';
+import { DatePicker } from '../../components/ui/DatePicker';
+import { RichTextEditor } from '../../components/ui/RichTextEditor';
+import { FileUpload } from '../../components/ui/FileUpload';
+import { TagsInput } from '../../components/ui/TagsInput';
+import { RadioGroup } from '../../components/ui/RadioGroup';
 
 
 
@@ -112,12 +117,12 @@ export default function DocumentABM() {
       sheetContent={
         <div className="space-y-4">
             <ABMInput label="Title" type="text"  value={formData.title || ""} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
-            <ABMInput label="File Url" type="text"  value={formData.file_url || ""} onChange={(e) => setFormData({...formData, file_url: e.target.value})}  />
-            <ABMInput label="Notes" type="text"  value={formData.notes || ""} onChange={(e) => setFormData({...formData, notes: e.target.value})}  />
-            <ABMInput label="Created Date" type="text"  value={formData.created_date || ""} onChange={(e) => setFormData({...formData, created_date: e.target.value})}  />
-            <ABMInput label="Keywords" type="text"  value={formData.keywords || ""} onChange={(e) => setFormData({...formData, keywords: e.target.value})}  />
+            <FileUpload label="File Url" value={formData.file_url || ""} onChange={(file) => setFormData({...formData, file_url: file ? file.name : ""})}  />
+            <RichTextEditor label="Notes" value={formData.notes || ""} onChange={(value) => setFormData({...formData, notes: value})}  />
+            <DatePicker label="Created Date" value={formData.created_date || ""} onChange={(value) => setFormData({...formData, created_date: value})}  />
+            <TagsInput label="Keywords" value={formData.keywords || []} onChange={(tags) => setFormData({...formData, keywords: tags})}  />
             <ABMSelect label="Document Type" value={formData.document_type || ''} onChange={(e) => setFormData({...formData, document_type: e.target.value})} options={[{ value: 'pdf', label: 'Pdf' }, { value: 'word', label: 'Word' }, { value: 'excel', label: 'Excel' }, { value: 'image', label: 'Image' }]} placeholder="Seleccionar..."  />
-            <ABMInput label="Access Level" type="text"  value={formData.access_level || ""} onChange={(e) => setFormData({...formData, access_level: e.target.value})} required />
+            <RadioGroup label="Access Level" value={formData.access_level || ""} onChange={(value) => setFormData({...formData, access_level: value})} options={[{label: 'Public', value: 'public'}, {label: 'Private', value: 'private'}, {label: 'Restricted', value: 'restricted'}]} />
         </div>
       }
       sheetFooter={<ABMSheetFooter onCancel={() => setSheetOpen(false)} onSave={handleSubmit} saving={saving} />}

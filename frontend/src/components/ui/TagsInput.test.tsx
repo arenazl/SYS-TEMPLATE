@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { TagsInput } from './TagsInput';
 
 /**
  * Unit Tests for TagsInput Component
@@ -15,78 +16,63 @@ import { describe, it, expect } from 'vitest';
 
 describe('TagsInput', () => {
   it('should render without crashing', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should have correct TypeScript types', () => {
-    const TagsInput = require('./TagsInput').default;
     const component = TagsInput;
     expect(component).toBeDefined();
   });
 
   it('should export a forwardRef component', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should support required prop', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should support error state display', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should allow adding tags', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should allow removing tags', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should support Enter key to add tag', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should support Backspace to remove tag', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should support comma separator', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should support paste event for multiple tags', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should prevent duplicate tags', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should display tags as chips', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should support validation', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 
   it('should integrate with theme context', () => {
-    const TagsInput = require('./TagsInput').default;
     expect(TagsInput).toBeDefined();
   });
 });
