@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
-import { Home, Menu, X, ChevronDown, Building2, Calendar, Users, Wrench, DollarSign, Package, BarChart3, Stethoscope, Receipt, UserRound, ClipboardList, FileText, TestTube, Pill, Heart } from 'lucide-react';
+import { Home, Menu, X, ChevronDown, Building2, Calendar, Users, Wrench, DollarSign, Package, BarChart3, Stethoscope, Receipt, UserRound, ClipboardList, FileText, TestTube, Pill, Heart, BookOpen } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useOrganization } from '../contexts/OrganizationContext';
 import { entities } from '../config/entityRegistry';
@@ -255,6 +255,9 @@ export default function Sidebar() {
         <nav className="p-3 space-y-1 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 64px)' }}>
           {/* Dashboard */}
           <MenuItem item={{ name: 'Dashboard', path: '/gestion', icon: Home }} />
+
+          {/* Tutorial */}
+          <MenuItem item={{ name: 'Tutorial', path: '/gestion/getting-started', icon: BookOpen }} />
 
           <div className="py-2" />
 
