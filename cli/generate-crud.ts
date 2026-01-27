@@ -79,6 +79,19 @@ function parseFields(fieldsStr: string): ParsedField[] {
       return { name, type: 'enum', required: isRequired, enumValues: enumMatch[1].split(',') };
     }
 
+    const radioMatch = type?.match(/^radio\((.+)\)$/);
+    if (radioMatch) {
+      return { name, type: 'radio', required: isRequired, enumValues: radioMatch[1].split(',') };
+    }
+
+    // Handle new control types
+    const controlTypes = ['datepicker', 'richtext', 'file', 'upload', 'tags'];
+    if (controlTypes.includes(type)) {
+      // For file/upload, normalize to 'file'
+      const normalizedType = (type === 'upload') ? 'file' : type;
+      return { name, type: normalizedType, required: isRequired };
+    }
+
     return { name, type, required: isRequired };
   });
 }
@@ -88,7 +101,9 @@ function getSqlAlchemyType(field: ParsedField): string {
     string: 'String(255)', text: 'Text', integer: 'Integer', int: 'Integer',
     decimal: 'Float', float: 'Float', bool: 'Boolean', boolean: 'Boolean',
     datetime: 'DateTime', date: 'Date', email: 'String(255)', json: 'JSON',
-    enum: 'String(50)', fk: 'Integer'
+    enum: 'String(50)', fk: 'Integer',
+    // New control types
+    datepicker: 'Date', richtext: 'Text', file: 'String(255)', tags: 'JSON', radio: 'String(50)'
   };
   return map[field.type] || 'String(255)';
 }
@@ -98,17 +113,21 @@ function getPydanticType(field: ParsedField): string {
     string: 'str', text: 'str', integer: 'int', int: 'int',
     decimal: 'float', float: 'float', bool: 'bool', boolean: 'bool',
     datetime: 'datetime', date: 'date', email: 'EmailStr', json: 'dict',
-    enum: 'str', fk: 'int'
+    enum: 'str', fk: 'int',
+    // New control types
+    datepicker: 'date', richtext: 'str', file: 'str', tags: 'list[str]', radio: 'str'
   };
   return map[field.type] || 'str';
 }
 
 function getTsType(field: ParsedField): string {
   const map: Record<string, string> = {
-    string: 'string', text: 'string', email: 'string', enum: 'string',
+    string: 'string', text: 'string', email: 'string', enum: 'string', radio: 'string',
     integer: 'number', int: 'number', decimal: 'number', float: 'number', fk: 'number',
     bool: 'boolean', boolean: 'boolean',
-    datetime: 'string', date: 'string', json: 'Record<string, any>'
+    datetime: 'string', date: 'string', datepicker: 'string', json: 'Record<string, any>',
+    // New control types
+    richtext: 'string', file: 'string', tags: 'string[]'
   };
   return map[field.type] || 'string';
 }
@@ -953,7 +972,14 @@ async function main() {
 
   if (args.length === 0) {
     console.log('Uso: npx tsx generate-crud.ts <archivo.json>');
-    console.log('\nSoporte: FK (ComboBox), Enum (Select), Master-Detail (inline)');
+    console.log('\nSoporte de Tipos:');
+    console.log('  - FK (ComboBox)');
+    console.log('  - Enum/Radio (Select/RadioGroup)');
+    console.log('  - DatePicker (date input)');
+    console.log('  - RichText (WYSIWYG editor)');
+    console.log('  - File (file upload)');
+    console.log('  - Tags (tag input)');
+    console.log('  - Master-Detail (inline form)');
     process.exit(1);
   }
 
