@@ -4,6 +4,10 @@ import { toast } from 'sonner';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { ABMPage, ABMCard, ABMCardActions, ABMTable, ABMTableAction, ABMInput, ABMTextarea, ABMSelect, ABMSheetFooter, ABMBadge } from '../../components/ui/ABMPage';
+import { DatePicker } from '../../components/ui/DatePicker';
+import { RichTextEditor } from '../../components/ui/RichTextEditor';
+import { FileUpload } from '../../components/ui/FileUpload';
+import { RadioGroup } from '../../components/ui/RadioGroup';
 
 
 
@@ -114,14 +118,14 @@ export default function EventABM() {
       sheetContent={
         <div className="space-y-4">
             <ABMInput label="Name" type="text"  value={formData.name || ""} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
-            <ABMInput label="Description" type="text"  value={formData.description || ""} onChange={(e) => setFormData({...formData, description: e.target.value})}  />
-            <ABMInput label="Event Date" type="text"  value={formData.event_date || ""} onChange={(e) => setFormData({...formData, event_date: e.target.value})} required />
+            <RichTextEditor label="Description" value={formData.description || ""} onChange={(value) => setFormData({...formData, description: value})}  />
+            <DatePicker label="Event Date" value={formData.event_date || ""} onChange={(value) => setFormData({...formData, event_date: value})} required />
             <ABMInput label="Start Time" type="datetime-local" value={formData.start_time || ''} onChange={(e) => setFormData({...formData, start_time: e.target.value})}  />
             <ABMInput label="Location" type="text"  value={formData.location || ""} onChange={(e) => setFormData({...formData, location: e.target.value})}  />
             <ABMInput label="Capacity" type="number"  value={formData.capacity ?? ""} onChange={(e) => setFormData({...formData, capacity: e.target.value ? Number(e.target.value) : undefined})}  />
-            <ABMInput label="Image" type="text"  value={formData.image || ""} onChange={(e) => setFormData({...formData, image: e.target.value})}  />
+            <FileUpload label="Image" value={formData.image || ""} onChange={(file) => setFormData({...formData, image: file ? file.name : ""})}  />
             <ABMSelect label="Event Type" value={formData.event_type || ''} onChange={(e) => setFormData({...formData, event_type: e.target.value})} options={[{ value: 'conference', label: 'Conference' }, { value: 'workshop', label: 'Workshop' }, { value: 'webinar', label: 'Webinar' }, { value: 'meeting', label: 'Meeting' }]} placeholder="Seleccionar..."  />
-            <ABMInput label="Status" type="text"  value={formData.status || ""} onChange={(e) => setFormData({...formData, status: e.target.value})} required />
+            <RadioGroup label="Status" value={formData.status || ""} onChange={(value) => setFormData({...formData, status: value})} options={[{label: 'Scheduled', value: 'scheduled'}, {label: 'Ongoing', value: 'ongoing'}, {label: 'Completed', value: 'completed'}, {label: 'Cancelled', value: 'cancelled'}]} />
         </div>
       }
       sheetFooter={<ABMSheetFooter onCancel={() => setSheetOpen(false)} onSave={handleSubmit} saving={saving} />}
