@@ -6,11 +6,12 @@
 // ============ TYPES ============
 export interface FieldConfig {
   name: string;
-  type: 'string' | 'text' | 'email' | 'int' | 'integer' | 'decimal' | 'float' | 'bool' | 'boolean' | 'date' | 'datetime' | 'json' | 'enum' | 'fk';
+  type: 'string' | 'text' | 'email' | 'int' | 'integer' | 'decimal' | 'float' | 'bool' | 'boolean' | 'date' | 'datetime' | 'json' | 'enum' | 'fk' | 'richtext' | 'file' | 'tags' | 'radio';
   required: boolean;
   fkEntity?: string;
   fkTable?: string;
   enumValues?: string[];
+  controlType?: 'richtext' | 'file' | 'tags' | 'radio' | 'datepicker';
 }
 
 export interface EntityConfig {
@@ -64,6 +65,36 @@ function parseFields(fieldsStr: string): FieldConfig[] {
         type: 'enum' as const,
         required: isRequired,
         enumValues: enumMatch[1].split(',')
+      };
+    }
+
+    const radioMatch = type?.match(/^radio\((.+)\)$/);
+    if (radioMatch) {
+      return {
+        name,
+        type: 'radio' as const,
+        required: isRequired,
+        enumValues: radioMatch[1].split(','),
+        controlType: 'radio'
+      };
+    }
+
+    // Handle new control types: richtext, file, tags, datepicker
+    const controlTypeMap: Record<string, FieldConfig['controlType']> = {
+      'richtext': 'richtext',
+      'file': 'file',
+      'upload': 'file',
+      'tags': 'tags',
+      'datepicker': 'datepicker'
+    };
+
+    const controlType = controlTypeMap[type];
+    if (controlType) {
+      return {
+        name,
+        type: (type || 'string') as FieldConfig['type'],
+        required: isRequired,
+        controlType
       };
     }
 
