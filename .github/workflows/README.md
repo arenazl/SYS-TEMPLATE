@@ -325,7 +325,7 @@ Configure these secrets in your GitHub repository settings (`Settings > Secrets 
 |--------|-------------|---------|
 | `NETLIFY_AUTH_TOKEN` | Netlify personal access token | Frontend staging & production |
 | `NETLIFY_SITE_ID` | Netlify site ID for staging | Frontend staging |
-| `NETLIFY_SITE_ID` | Netlify site ID for production | Frontend production |
+| `NETLIFY_SITE_ID_PROD` | Netlify site ID for production | Frontend production |
 | `VITE_API_URL_STAGING` | Backend API URL for staging (optional) | Frontend staging |
 | `VITE_API_URL_PRODUCTION` | Backend API URL for production (optional) | Frontend production |
 
