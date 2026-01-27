@@ -1,4 +1,5 @@
 """Schemas Document"""
+from datetime import date
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
