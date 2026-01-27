@@ -1,0 +1,21 @@
+{
+  "module": {
+    "name": "Tutorial",
+    "description": "Ejemplo simple para aprender a usar el generador",
+    "icon": "GraduationCap",
+    "path": "tutorial",
+    "folder": "tutorial",
+    "requiredRole": "usuario",
+    "containerStyle": "dashboard"
+  },
+  "entities": [
+    {
+      "name": "Task",
+      "plural": "tasks",
+      "table": "tasks",
+      "fields": "titulo:string:req descripcion:text completada:bool fecha_vencimiento:date",
+      "icon": "CheckSquare",
+      "order": 1
+    }
+  ]
+}

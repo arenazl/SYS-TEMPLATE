@@ -12,6 +12,26 @@ proyecto/
 
 ---
 
+## 🚀 Primera Vez? Probá el Tutorial Interactivo
+
+> **NUEVO:** Si es tu primera vez usando SYS-TEMPLATE, tenemos un tutorial interactivo (interactive tutorial) que te lleva de cero a una app funcionando en 15 minutos.
+
+**Dos opciones para comenzar:**
+
+1. **Tutorial Interactivo (Recomendado)** 👉 `http://localhost:5173/gestion/getting-started`
+   - Paso a paso con ejemplos
+   - Definís tu primera entidad
+   - Generás código automáticamente
+   - Ves tu ABM funcionando
+
+2. **Guía Escrita** 👉 Ver `00_GETTING_STARTED_TUTORIAL.md`
+   - Mismo contenido en formato markdown
+   - Ideal para seguir a tu ritmo
+
+**Después del tutorial,** volvé acá para entender el flujo completo y las reglas del framework.
+
+---
+
 ## Flujo de Trabajo
 
 ```
@@ -181,6 +201,7 @@ Antes de comenzar a codear:
 | Archivo | Propósito |
 |---------|-----------|
 | `00_COMO_USAR.md` | Este documento - cómo usar la guía |
+| `00_GETTING_STARTED_TUTORIAL.md` | Tutorial interactivo para nuevos usuarios |
 | `01_ANALISIS.md` | Modelo de datos, endpoints, estructura |
 | `02_PANTALLAS.md` | Navegación, rutas, patrón ABM |
 | `03_STACK.md` | Tecnologías, dependencias, troubleshooting |

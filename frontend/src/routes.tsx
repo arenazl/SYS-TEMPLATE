@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Pages
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import GettingStarted from './pages/GettingStarted';
 import DynamicABM from './components/DynamicABM';
 import AuditoriaPage from './pages/auditoria/AuditoriaPage';
 
@@ -22,6 +23,9 @@ export const router = createBrowserRouter([
     children: [
       // Dashboard
       { index: true, element: <Dashboard /> },
+
+      // Getting Started Tutorial
+      { path: 'getting-started', element: <GettingStarted /> },
 
       // === RUTA DINÁMICA ===
       // Una sola ruta maneja TODAS las entidades:

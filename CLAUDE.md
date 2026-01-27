@@ -65,6 +65,28 @@ SYS-TEMPLATE/
 
 ---
 
+## Getting Started - Tutorial Interactivo
+
+**Para usuarios nuevos:** SYS-TEMPLATE incluye un tutorial interactivo que guía paso a paso desde cero hasta tener una aplicación funcionando (10-15 minutos).
+
+### Acceso al Tutorial
+
+```
+http://localhost:5173/gestion/getting-started
+```
+
+O hacer click en "Tutorial" en el menú lateral de la aplicación.
+
+El tutorial cubre:
+- ✅ Definir una entidad en JSON
+- ✅ Generar código automáticamente
+- ✅ Ver el ABM funcionando
+- ✅ Entender el flujo completo
+
+**Documentación escrita:** Ver `APP_GUIDE/00_GETTING_STARTED_TUTORIAL.md`
+
+---
+
 ## Cómo Funciona el Generador
 
 ### 1. Definir entidad en JSON
@@ -167,6 +189,7 @@ cd frontend && npm run build && netlify deploy --prod --dir=dist
 
 | Guía | Contenido |
 |------|-----------|
+| `00_GETTING_STARTED_TUTORIAL.md` | Tutorial interactivo para nuevos usuarios |
 | `13_GENERADOR.md` | Cómo usar el generador de ABMs |
 | `03_STACK.md` | Stack tecnológico y configuración |
 | `04_UI.md` | Sistema de diseño y componentes |
