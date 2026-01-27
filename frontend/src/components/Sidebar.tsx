@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const menuItems = [
   { name: 'Dashboard', path: '/gestion', icon: Home },
-    { name: 'Tutorial', path: '/gestion/tutorial', icon: BookOpen },
+    { name: 'Tutorial', path: '/gestion/getting-started', icon: BookOpen },
     { name: 'Categoria', path: '/gestion/categorias', icon: Tag },
     { name: 'Producto', path: '/gestion/productos', icon: Box },
     { name: 'Cliente', path: '/gestion/clientes', icon: Users },

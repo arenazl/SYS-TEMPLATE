@@ -1,15 +1,15 @@
 /**
- * Entity Registry - Generado automáticamente por sync.ts
- * NO EDITAR MANUALMENTE - se regenera con: npx tsx cli/sync.ts
+ * Entity Registry - Generado automáticamente por run-tutorial.ts
+ * NO EDITAR MANUALMENTE - se regenera con: npx tsx cli/run-tutorial.ts
  */
 
 // ============ TYPES ============
-export interface FieldConfig {
+
+export interface EntityField {
   name: string;
-  type: 'string' | 'text' | 'email' | 'int' | 'integer' | 'decimal' | 'float' | 'bool' | 'boolean' | 'date' | 'datetime' | 'json' | 'enum' | 'fk';
-  required: boolean;
+  type: 'string' | 'int' | 'decimal' | 'bool' | 'date' | 'datetime' | 'text' | 'email' | 'fk' | 'enum';
+  required?: boolean;
   fkEntity?: string;
-  fkTable?: string;
   enumValues?: string[];
 }
 
@@ -17,8 +17,7 @@ export interface EntityConfig {
   name: string;
   plural: string;
   table: string;
-  fields: FieldConfig[];
-  fieldsRaw: string;
+  fields: EntityField[];
   icon: string;
   order: number;
   displayField?: string;
@@ -37,252 +36,87 @@ export interface ModuleConfig {
   containerStyle: string;
 }
 
-// ============ FIELD PARSER ============
-function parseFields(fieldsStr: string): FieldConfig[] {
-  return fieldsStr.split(' ').filter(Boolean).map(fieldDef => {
+// ============ PARSER ============
+
+function parseFields(fieldsStr: string): EntityField[] {
+  return fieldsStr.split(/\s+/).filter(Boolean).map(fieldDef => {
     const parts = fieldDef.split(':');
     const name = parts[0];
-    const type = parts[1];
-    const isRequired = parts.includes('req');
+    let type = parts[1] || 'string';
+    const required = parts.includes('req');
+    let fkEntity: string | undefined;
+    let enumValues: string[] | undefined;
 
-    if (type === 'fk') {
-      // parts[3] puede ser la tabla o 'req'
-      const explicitTable = parts[3] && parts[3] !== 'req' ? parts[3] : undefined;
-      return {
-        name,
-        type: 'fk' as const,
-        required: isRequired,
-        fkEntity: parts[2],
-        fkTable: explicitTable || parts[2]?.toLowerCase() + 's'
-      };
+    // Manejar enums: estado:enum(pendiente,aprobado,rechazado)
+    if (type.startsWith('enum(')) {
+      const match = type.match(/enum\(([^)]+)\)/);
+      if (match) {
+        enumValues = match[1].split(',');
+        type = 'enum';
+      }
     }
 
-    const enumMatch = type?.match(/^enum\((.+)\)$/);
-    if (enumMatch) {
-      return {
-        name,
-        type: 'enum' as const,
-        required: isRequired,
-        enumValues: enumMatch[1].split(',')
-      };
+    // Manejar FKs: cliente_id:fk:Cliente
+    if (type === 'fk') {
+      fkEntity = parts[2];
     }
 
     return {
       name,
-      type: (type || 'string') as FieldConfig['type'],
-      required: isRequired
+      type: type as EntityField['type'],
+      required,
+      fkEntity,
+      enumValues
     };
   });
 }
 
-// ============ RAW DATA ============
-const modulesData: ModuleConfig[] = [
+// ============ DATA ============
+
+export const ENTITIES: EntityConfig[] = [
   {
-    "name": "Auditoria",
-    "description": "Administración y seguridad del sistema",
-    "icon": "Settings",
-    "path": "auditoria",
-    "folder": "auditoria",
-    "requiredRole": "admin",
-    "containerStyle": "tabs"
-  },
+    ...{
+        "name": "Task",
+        "plural": "tasks",
+        "table": "tasks",
+        "icon": "CheckSquare",
+        "order": 1
+    },
+    fields: parseFields("titulo:string:req descripcion:text completada:bool fecha_vencimiento:date")
+  }
+];
+
+export const MODULES: ModuleConfig[] = [
   {
-    "name": "Negocio",
-    "description": "Gestión de clientes, productos y pedidos",
-    "icon": "ShoppingBag",
-    "path": "negocio",
-    "folder": "negocio",
+    "name": "Tutorial",
+    "description": "Ejemplo simple para aprender a usar el generador",
+    "icon": "GraduationCap",
+    "path": "tutorial",
+    "folder": "tutorial",
     "requiredRole": "usuario",
     "containerStyle": "dashboard"
   }
 ];
 
-const entitiesData: Omit<EntityConfig, 'fields'>[] = [
-  {
-    "name": "Organizacion",
-    "plural": "organizaciones",
-    "table": "organizaciones",
-    "fieldsRaw": "nombre:string:req codigo:string:req descripcion:text logo_url:string color_primario:string color_secundario:string direccion:string telefono:string email:email sitio_web:string",
-    "icon": "Building2",
-    "order": 1
-  },
-  {
-    "name": "Usuario",
-    "plural": "usuarios",
-    "table": "usuarios",
-    "fieldsRaw": "email:email:req password_hash:string:req nombre:string:req apellido:string:req telefono:string rol:enum(usuario,supervisor,admin):req organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Users",
-    "order": 2
-  },
-  {
-    "name": "Rol",
-    "plural": "roles",
-    "table": "roles",
-    "fieldsRaw": "nombre:string:req codigo:string:req descripcion:text organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Shield",
-    "order": 3
-  },
-  {
-    "name": "Permiso",
-    "plural": "permisos",
-    "table": "permisos",
-    "fieldsRaw": "nombre:string:req codigo:string:req modulo:string:req descripcion:text organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Key",
-    "order": 4
-  },
-  {
-    "name": "Rolpermiso",
-    "plural": "rol_permisos",
-    "table": "rol_permisos",
-    "fieldsRaw": "rol_id:fk:Rol:roles:req permiso_id:fk:Permiso:permisos:req organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Link",
-    "order": 5
-  },
-  {
-    "name": "Menu",
-    "plural": "menus",
-    "table": "menus",
-    "fieldsRaw": "nombre:string:req path:string:req icono:string orden:int parent_id:fk:Menu:menus organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Menu",
-    "order": 6
-  },
-  {
-    "name": "Menurol",
-    "plural": "menu_roles",
-    "table": "menu_roles",
-    "fieldsRaw": "menu_id:fk:Menu:menus:req rol_id:fk:Rol:roles:req organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Link",
-    "order": 7
-  },
-  {
-    "name": "Logauditoria",
-    "plural": "logs_auditoria",
-    "table": "logs_auditoria",
-    "fieldsRaw": "usuario_id:fk:Usuario:usuarios accion:string:req entidad:string entidad_id:int datos_anteriores:json datos_nuevos:json ip:string user_agent:string organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "FileText",
-    "order": 8
-  },
-  {
-    "name": "Sesion",
-    "plural": "sesiones",
-    "table": "sesiones",
-    "fieldsRaw": "usuario_id:fk:Usuario:usuarios:req token:string:req ip:string user_agent:string expires_at:datetime organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Clock",
-    "order": 9
-  },
-  {
-    "name": "Parametro",
-    "plural": "parametros",
-    "table": "parametros",
-    "fieldsRaw": "clave:string:req valor:text:req tipo:enum(string,number,boolean,json):req descripcion:text editable:bool organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Sliders",
-    "order": 10
-  },
-  {
-    "name": "Notificacion",
-    "plural": "notificaciones",
-    "table": "notificaciones",
-    "fieldsRaw": "usuario_id:fk:Usuario:usuarios:req titulo:string:req mensaje:text tipo:enum(info,success,warning,error) leida:bool organizacion_id:fk:Organizacion:organizaciones",
-    "icon": "Bell",
-    "order": 11
-  },
-  {
-    "name": "Categoria",
-    "plural": "categorias",
-    "table": "categorias",
-    "fieldsRaw": "nombre:string:req descripcion:text color:string",
-    "icon": "Tag",
-    "order": 1
-  },
-  {
-    "name": "Producto",
-    "plural": "productos",
-    "table": "productos",
-    "fieldsRaw": "codigo:string nombre:string:req descripcion:text precio:decimal:req costo:decimal stock:integer stock_minimo:integer categoria_id:fk:Categoria",
-    "icon": "Box",
-    "order": 2
-  },
-  {
-    "name": "Cliente",
-    "plural": "clientes",
-    "table": "clientes",
-    "fieldsRaw": "codigo:string nombre:string:req razon_social:string cuit:string email:email telefono:string direccion:text ciudad:string provincia:string tipo:enum(minorista,mayorista,distribuidor)",
-    "icon": "Users",
-    "order": 3
-  },
-  {
-    "name": "Proveedor",
-    "plural": "proveedores",
-    "table": "proveedores",
-    "fieldsRaw": "codigo:string nombre:string:req razon_social:string cuit:string contacto:string telefono:string email:email direccion:text notas:text",
-    "icon": "Truck",
-    "order": 4
-  },
-  {
-    "name": "Pedido",
-    "plural": "pedidos",
-    "table": "pedidos",
-    "fieldsRaw": "numero:string:req fecha:date:req fecha_entrega:date cliente_id:fk:Cliente:req estado:enum(pendiente,confirmado,preparando,enviado,entregado,cancelado):req subtotal:decimal descuento:decimal total:decimal notas:text",
-    "icon": "ShoppingCart",
-    "order": 5,
-    "masterDetail": true
-  },
-  {
-    "name": "DetallePedido",
-    "plural": "detalles_pedido",
-    "table": "detalles_pedido",
-    "fieldsRaw": "pedido_id:fk:Pedido:req producto_id:fk:Producto:req cantidad:decimal:req precio_unitario:decimal:req descuento:decimal subtotal:decimal:req",
-    "icon": "ListOrdered",
-    "order": 5.1,
-    "isDetail": true,
-    "masterEntity": "Pedido"
-  },
-  {
-    "name": "Compra",
-    "plural": "compras",
-    "table": "compras",
-    "fieldsRaw": "numero:string:req fecha:date:req fecha_recepcion:date proveedor_id:fk:Proveedor:req estado:enum(pendiente,parcial,recibido,cancelado):req subtotal:decimal descuento:decimal total:decimal notas:text",
-    "icon": "Receipt",
-    "order": 6
-  },
-  {
-    "name": "Movimiento",
-    "plural": "movimientos",
-    "table": "movimientos",
-    "fieldsRaw": "fecha:datetime:req tipo:enum(entrada,salida,ajuste_positivo,ajuste_negativo):req producto_id:fk:Producto:req cantidad:integer:req stock_anterior:integer stock_posterior:integer motivo:string referencia:string",
-    "icon": "ArrowLeftRight",
-    "order": 7
-  }
-];
-
-// ============ PARSED REGISTRY ============
-export const entities: Record<string, EntityConfig> = {};
-export const entitiesByPlural: Record<string, EntityConfig> = {};
-export const modules: ModuleConfig[] = modulesData;
-
-// Inicializar
-for (const raw of entitiesData) {
-  const entity: EntityConfig = {
-    ...raw,
-    fields: parseFields(raw.fieldsRaw)
-  };
-  entities[entity.name] = entity;
-  entitiesByPlural[entity.plural] = entity;
-}
-
 // ============ HELPERS ============
-export function getEntity(name: string): EntityConfig | undefined {
-  return entities[name];
+
+export function getEntityConfig(entityName: string): EntityConfig | undefined {
+  return ENTITIES.find(e => e.name === entityName);
 }
 
-export function getEntityByPlural(plural: string): EntityConfig | undefined {
-  return entitiesByPlural[plural];
+export function getEntitiesByModule(modulePath: string): EntityConfig[] {
+  const module = MODULES.find(m => m.path === modulePath);
+  if (!module) return [];
+  return ENTITIES.filter(e => {
+    // Las entidades están ordenadas por módulo en el array
+    return true; // Simplificado para el tutorial
+  });
 }
 
-export function getEntitiesForModule(modulePath: string): EntityConfig[] {
-  return Object.values(entities).filter(e => !e.isDetail).sort((a, b) => a.order - b.order);
+export function getAllEntities(): EntityConfig[] {
+  return ENTITIES;
 }
 
-export function getDetailEntity(masterName: string): EntityConfig | undefined {
-  return Object.values(entities).find(e => e.isDetail && e.masterEntity === masterName);
+export function getAllModules(): ModuleConfig[] {
+  return MODULES;
 }
