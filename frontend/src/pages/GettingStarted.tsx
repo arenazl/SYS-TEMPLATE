@@ -407,105 +407,65 @@ class Task(SQLModel, table=True):
           </TutorialStepSection>
 
           <TutorialStepSection title="Documentación útil">
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.open('/APP_GUIDE/13_GENERADOR.md', '_blank');
-                }}
+            <p style={{ color: theme.textSecondary, marginBottom: '1rem', fontSize: '0.875rem' }}>
+              La documentación completa está disponible en la carpeta <code style={{
+                backgroundColor: theme.backgroundSecondary,
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.25rem',
+                fontFamily: 'monospace'
+              }}>APP_GUIDE/</code> de tu proyecto local.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div
                 style={{
-                  display: 'block',
-                  padding: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.75rem 1rem',
                   borderRadius: '0.5rem',
                   backgroundColor: theme.card,
                   border: `1px solid ${theme.border}`,
                   color: theme.text,
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = theme.primary;
-                  e.currentTarget.style.backgroundColor = `${theme.primary}05`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = theme.border;
-                  e.currentTarget.style.backgroundColor = theme.card;
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>
-                  📖 Guía del Generador
-                </div>
-                <div style={{ fontSize: '0.875rem', color: theme.textSecondary }}>
-                  Documentación completa sobre el generador de código
-                </div>
-              </a>
+                <span>📖</span>
+                <span style={{ fontWeight: 600 }}>Guía del Generador</span>
+                <code style={{ fontSize: '0.75rem', color: theme.textSecondary }}>APP_GUIDE/13_GENERADOR.md</code>
+              </div>
 
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.open('/APP_GUIDE/03_STACK.md', '_blank');
-                }}
+              <div
                 style={{
-                  display: 'block',
-                  padding: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.75rem 1rem',
                   borderRadius: '0.5rem',
                   backgroundColor: theme.card,
                   border: `1px solid ${theme.border}`,
                   color: theme.text,
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = theme.primary;
-                  e.currentTarget.style.backgroundColor = `${theme.primary}05`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = theme.border;
-                  e.currentTarget.style.backgroundColor = theme.card;
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>
-                  🏗️ Stack Tecnológico
-                </div>
-                <div style={{ fontSize: '0.875rem', color: theme.textSecondary }}>
-                  Conoce las tecnologías que usa el framework
-                </div>
-              </a>
+                <span>🏗️</span>
+                <span style={{ fontWeight: 600 }}>Stack Tecnológico</span>
+                <code style={{ fontSize: '0.75rem', color: theme.textSecondary }}>APP_GUIDE/03_STACK.md</code>
+              </div>
 
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.open('/APP_GUIDE/04_UI.md', '_blank');
-                }}
+              <div
                 style={{
-                  display: 'block',
-                  padding: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.75rem 1rem',
                   borderRadius: '0.5rem',
                   backgroundColor: theme.card,
                   border: `1px solid ${theme.border}`,
                   color: theme.text,
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = theme.primary;
-                  e.currentTarget.style.backgroundColor = `${theme.primary}05`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = theme.border;
-                  e.currentTarget.style.backgroundColor = theme.card;
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>
-                  🎨 Sistema de Diseño
-                </div>
-                <div style={{ fontSize: '0.875rem', color: theme.textSecondary }}>
-                  Componentes UI y guías de estilo
-                </div>
-              </a>
+                <span>🎨</span>
+                <span style={{ fontWeight: 600 }}>Sistema de Diseño</span>
+                <code style={{ fontSize: '0.75rem', color: theme.textSecondary }}>APP_GUIDE/04_UI.md</code>
+              </div>
             </div>
           </TutorialStepSection>
 

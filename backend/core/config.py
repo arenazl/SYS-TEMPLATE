@@ -15,10 +15,10 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # Puerto del servidor
-    PORT: int = 8000
+    PORT: int = 8010
 
     # URL del frontend (para links en notificaciones)
-    FRONTEND_URL: str = "http://localhost:5173"
+    FRONTEND_URL: str = "http://localhost:5180"
 
     # IA Provider - Orden de prioridad ("gemini,groq" o "groq,gemini")
     AI_PROVIDER_ORDER: str = "gemini,groq"
@@ -74,6 +74,7 @@ class Settings(BaseSettings):
         """Retorna lista de origenes CORS permitidos"""
         # Origenes de desarrollo (localhost)
         dev_origins = [
+            "http://localhost:5180",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -82,6 +83,7 @@ class Settings(BaseSettings):
             "http://localhost:5178",
             "http://localhost:5179",
             "http://localhost:3000",
+            "http://127.0.0.1:5180",
             "http://127.0.0.1:5173",
             "http://127.0.0.1:5174",
             "http://127.0.0.1:5175",

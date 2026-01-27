@@ -10,6 +10,7 @@
 2. **NUNCA** asumir que un campo existe - verificarlo primero
 3. **SIEMPRE** incluir el campo `activo` en los inserts del seed
 4. **SIEMPRE** agregar `import sqlmodel` en las migraciones de Alembic
+5. **SIEMPRE** usar Side Modals (Sheet) para formularios - NUNCA modales centrados (Dialog)
 
 ---
 
@@ -224,7 +225,7 @@ Antes de empezar a trabajar:
 
 ---
 
-## 🎯 Resumen: Los 4 Errores Más Comunes
+## 🎯 Resumen: Los 5 Errores Más Comunes
 
 | Error | Causa | Solución Rápida |
 |-------|-------|-----------------|
@@ -232,6 +233,7 @@ Antes de empezar a trabajar:
 | `Field 'activo' doesn't have a default value` | Falta campo en INSERT | Incluir `activo: true` |
 | `object has no attribute 'campo'` | Campo no existe en modelo | Revisar modelo y corregir código |
 | `Target database is not up to date` | Base desincronizada | `clean-db.ts` + `sync:migrate` |
+| Modal centrado en lugar de side modal | UX inconsistente | Usar `<Sheet>` en lugar de `<Dialog>` |
 
 ---
 

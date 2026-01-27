@@ -14,11 +14,16 @@ function getIcon(iconName: string): React.ComponentType<{ className?: string }> 
 }
 
 // Categorías predefinidas para Clínica
+// Items personalizados que no vienen del entityRegistry
+const customItems: Record<string, { name: string; path: string; icon: string }> = {
+  'turnos-calendar': { name: 'Calendario Turnos', path: '/gestion/turnos-calendar', icon: 'Calendar' },
+};
+
 const defaultCategories = [
   {
     name: 'Turnos y Agenda',
     icon: Calendar,
-    plurals: ['turnos', 'agendas_medico', 'lista_espera', 'ausencias_medico', 'turnos_ausentes', 'cancelaciones_turno']
+    plurals: ['turnos-calendar', 'turnos', 'agendas_medico', 'lista_espera', 'ausencias_medico', 'turnos_ausentes', 'cancelaciones_turno']
   },
   {
     name: 'Pacientes',
@@ -137,7 +142,7 @@ export default function Sidebar() {
         to={item.path}
         onClick={() => setIsOpen(false)}
         className={`
-          flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm
+          flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm min-w-0
           ${active ? 'font-semibold' : 'hover:translate-x-1'}
           ${isNeumorphic && active ? 'neu-pressed' : ''}
           ${isNeumorphic && !active ? 'hover:neu-subtle' : ''}
@@ -147,11 +152,11 @@ export default function Sidebar() {
           color: active ? theme.primary : theme.textSecondary,
         }}
       >
-        <Icon className="h-4 w-4" />
-        <span>{item.name}</span>
+        <Icon className="h-4 w-4 flex-shrink-0" />
+        <span className="truncate flex-1 min-w-0">{item.name}</span>
         {active && (
           <div
-            className="ml-auto w-1.5 h-1.5 rounded-full"
+            className="flex-shrink-0 w-1.5 h-1.5 rounded-full"
             style={{ backgroundColor: theme.primary }}
           />
         )}
@@ -165,7 +170,21 @@ export default function Sidebar() {
 
   // Genera los items de una categoría (para menú por defecto)
   const getCategoryItems = (plurals: string[]): MenuItemData[] => {
-    return Object.values(entities)
+    const items: MenuItemData[] = [];
+
+    // Primero agregar items personalizados en el orden de plurals
+    plurals.forEach(plural => {
+      if (customItems[plural]) {
+        items.push({
+          name: customItems[plural].name,
+          path: customItems[plural].path,
+          icon: getIcon(customItems[plural].icon),
+        });
+      }
+    });
+
+    // Luego agregar items del entityRegistry
+    const entityItems = Object.values(entities)
       .filter(e => !e.isDetail && plurals.includes(e.plural))
       .sort((a, b) => a.order - b.order)
       .map(e => ({
@@ -173,6 +192,9 @@ export default function Sidebar() {
         path: `/gestion/${e.plural}`,
         icon: getIcon(e.icon),
       }));
+
+    items.push(...entityItems);
+    return items;
   };
 
   // Construir estructura de menú
@@ -275,18 +297,18 @@ export default function Sidebar() {
                 {/* Header de categoría */}
                 <button
                   onClick={() => toggleCategory(category.name)}
-                  className="flex items-center justify-between w-full px-3 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-opacity-50"
+                  className="flex items-center justify-between w-full px-3 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-opacity-50 min-w-0"
                   style={{
                     color: hasActiveItem ? theme.primary : theme.textSecondary,
                     backgroundColor: hasActiveItem ? `${theme.primary}08` : 'transparent',
                   }}
                 >
-                  <div className="flex items-center gap-2">
-                    <CategoryIcon className="h-4 w-4" />
-                    <span>{category.name}</span>
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <CategoryIcon className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{category.name}</span>
                   </div>
                   <ChevronDown
-                    className={`h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    className={`h-3.5 w-3.5 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
 

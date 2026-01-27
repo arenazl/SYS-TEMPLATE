@@ -10,6 +10,7 @@ import DynamicABM from './components/DynamicABM';
 import AuditoriaPage from './pages/auditoria/AuditoriaPage';
 import MentalHealthLanding from './pages/MentalHealthLanding';
 import AgendaMedica from './pages/AgendaMedica';
+import TurnosCalendar from './pages/TurnosCalendar';
 
 export const router = createBrowserRouter([
   // === RUTAS PÚBLICAS ===
@@ -37,6 +38,9 @@ export const router = createBrowserRouter([
       // === RUTAS ESPECÍFICAS ===
       // Agenda médica con calendario y drag & drop
       { path: 'agendas_medico', element: <AgendaMedica /> },
+
+      // Turnos con vista calendario (médico ve solo los suyos, admin ve todos)
+      { path: 'turnos-calendar', element: <TurnosCalendar /> },
 
       // === RUTA DINÁMICA GENERAL ===
       // Una sola ruta maneja TODAS las entidades

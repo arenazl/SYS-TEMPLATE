@@ -4,7 +4,7 @@ const getApiUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl) return envUrl;
 
-  const port = import.meta.env.VITE_API_PORT || '8000';
+  const port = import.meta.env.VITE_API_PORT || '8010';
   const host = window.location.hostname || 'localhost';
   return `http://${host}:${port}/api`;
 };
